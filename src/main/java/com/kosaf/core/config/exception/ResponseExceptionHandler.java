@@ -1,16 +1,13 @@
 package com.kosaf.core.config.exception;
 
 import com.kosaf.core.common.ApiResponse;
-import com.kosaf.core.common.ResponseException;
+import com.kosaf.core.common.exception.ResponseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice

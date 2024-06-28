@@ -7,7 +7,7 @@ import com.kosaf.core.api.frequencyPhrases.value.UseFilter;
 import com.kosaf.core.common.ApiResponse;
 import com.kosaf.core.common.ExcelUtil;
 import com.kosaf.core.common.PageResult;
-import com.kosaf.core.common.ResponseException;
+import com.kosaf.core.common.exception.ResponseException;
 import com.kosaf.core.config.validation.ValidSequence;
 import com.kosaf.core.config.webClient.ServerCaller;
 import lombok.RequiredArgsConstructor;

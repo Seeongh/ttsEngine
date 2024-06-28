@@ -1,6 +1,7 @@
-package com.kosaf.core.common;
+package com.kosaf.core.config.interceptor;
 
 import com.kosaf.core.api.author.application.LoginUserComponent;
+import com.kosaf.core.common.Auth;
 import com.kosaf.core.common.exception.InvalidClientException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

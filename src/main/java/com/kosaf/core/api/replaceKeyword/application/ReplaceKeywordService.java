@@ -1,14 +1,5 @@
 package com.kosaf.core.api.replaceKeyword.application;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.kosaf.core.api.bbs.application.dto.BbsDTO;
-import com.kosaf.core.api.bbs.application.dto.BbsListParam;
-import com.kosaf.core.api.frequencyPhrases.application.dto.FrequencyPhCreateDTO;
-import com.kosaf.core.api.frequencyPhrases.application.dto.FrequencyPhListParam;
-import com.kosaf.core.api.frequencyPhrases.domain.FrequencyPh;
 import com.kosaf.core.api.replaceKeyword.application.dto.*;
 import com.kosaf.core.api.replaceKeyword.domain.ReplaceKw;
 import com.kosaf.core.api.replaceKeyword.infrastructure.ReplaceKeywordMapper;
@@ -16,10 +7,9 @@ import com.kosaf.core.api.replaceKeyword.value.UseFilter;
 import com.kosaf.core.common.ApiResponse;
 import com.kosaf.core.common.ExcelUtil;
 import com.kosaf.core.common.PageResult;
-import com.kosaf.core.common.ResponseException;
+import com.kosaf.core.common.exception.ResponseException;
 import com.kosaf.core.config.validation.ValidSequence;
 import com.kosaf.core.config.webClient.ServerCaller;
-import com.kosaf.core.config.webClient.WebClientService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -29,7 +19,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -38,7 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import javax.validation.ValidationException;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -145,7 +133,6 @@ public class ReplaceKeywordService {
 
         if(!duplicates.isEmpty()) {
             // 중복된 항목 제거
-            log.info("ash duplicated removeall");
             createDto.getKeywordDtoList().removeAll(duplicates);
         }
 

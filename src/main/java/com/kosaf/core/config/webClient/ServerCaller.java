@@ -10,20 +10,17 @@ import com.kosaf.core.api.monitoring.application.dto.ResponseBodyDto;
 import com.kosaf.core.api.monitoring.application.dto.ResponseServerDto;
 import com.kosaf.core.api.replaceKeyword.application.dto.ReplaceKwCreateDTO;
 import com.kosaf.core.api.replaceKeyword.application.dto.RequestCommandMethod;
-import com.kosaf.core.common.ResponseException;
+import com.kosaf.core.common.exception.ResponseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.ResponseBody;
 import reactor.core.publisher.Mono;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j

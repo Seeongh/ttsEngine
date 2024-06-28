@@ -1,4 +1,4 @@
-package com.kosaf.core.common;
+package com.kosaf.core.common.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

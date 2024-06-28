@@ -3,17 +3,12 @@ package com.kosaf.core.config.validation;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
-import com.kosaf.core.common.ResponseException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.kosaf.core.common.ApiResponse;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
