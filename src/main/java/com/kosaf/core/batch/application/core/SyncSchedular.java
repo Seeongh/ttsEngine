@@ -18,7 +18,8 @@ public class SyncSchedular {
     @Autowired
     private JobLauncher jobLauncher;
 
-    @Scheduled(cron = "0 0 0 * * ?")
+   // @Scheduled(cron = "0 0 0 * * ?")
+   @Scheduled(cron = "0 * * * * ?")
     public void perform() throws Exception {
         log.info("Scheduled job running");
         JobParameters jobParameters = new JobParametersBuilder()

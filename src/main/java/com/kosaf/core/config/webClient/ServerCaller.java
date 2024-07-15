@@ -10,9 +10,12 @@ import com.kosaf.core.api.monitoring.application.dto.ResponseBodyDto;
 import com.kosaf.core.api.monitoring.application.dto.ResponseServerDto;
 import com.kosaf.core.api.replaceKeyword.application.dto.ReplaceKwCreateDTO;
 import com.kosaf.core.api.replaceKeyword.application.dto.RequestCommandMethod;
+import com.kosaf.core.api.ttsDemo.application.dto.RequestTTSDTO;
+import com.kosaf.core.api.ttsDemo.application.dto.ResponseTTSDTO;
 import com.kosaf.core.common.exception.ResponseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -30,7 +33,7 @@ public class ServerCaller {
 
     private final String server1BaseUrl = "http://tts.ai-mediazen.com:56012";
     private final String server2BaseUrl = "http://tts.ai-mediazen.com:56014";
-
+    private final String ttsUrl = "http://tts.ai-mediazen.com:56014";
     private final WebClientService webClientService;
 
     /**
@@ -377,5 +380,12 @@ public class ServerCaller {
                     return map1;
                 })
                 .block();
+    }
+
+    /**
+     * TTS요청
+     */
+    public Mono<Resource> generateWaveFile(RequestTTSDTO ttsDto) {
+        return webClientService.requestTTS(ttsUrl, ttsDto);
     }
 }

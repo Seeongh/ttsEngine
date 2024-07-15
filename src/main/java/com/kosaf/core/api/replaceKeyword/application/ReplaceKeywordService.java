@@ -56,7 +56,7 @@ public class ReplaceKeywordService {
                     .<ReplaceKwListDTO>builder()
                     .page(param.getPage()) //요청된 페이지 번호 설정
                     .pageScale(param.getPageScale())
-                    .totalCount(replaceKwMapper.countAll(param))
+                    .totalCount(Optional.ofNullable(replaceKwMapper.countAll(param)).orElse(0))
                     .items(Optional
                             .ofNullable(replaceKwMapper.findAll(param))
                             .orElseGet(Collections::emptyList)

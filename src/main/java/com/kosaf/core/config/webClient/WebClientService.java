@@ -2,12 +2,17 @@ package com.kosaf.core.config.webClient;
 
 import com.kosaf.core.api.monitoring.application.dto.ResponseBodyDto;
 import com.kosaf.core.api.monitoring.application.dto.ResponseServerDto;
+import com.kosaf.core.api.ttsDemo.application.dto.RequestTTSDTO;
+import com.kosaf.core.api.ttsDemo.application.dto.ResponseTTSDTO;
 import com.kosaf.core.config.webClient.dto.RequestReplaceKw;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
@@ -109,4 +114,16 @@ public class WebClientService {
         }
         return serverDto;
     }
+
+    public   Mono<Resource>  requestTTS(String ttsUrl, RequestTTSDTO ttsDto) {
+        return webClient.post()
+                .uri(ttsUrl)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(ttsDto)
+                .retrieve()
+                .bodyToMono(byte[].class) // WAV 파일 데이터를 byte 배열로 받음
+                .map(ByteArrayResource::new);
+
+    }
+
 }

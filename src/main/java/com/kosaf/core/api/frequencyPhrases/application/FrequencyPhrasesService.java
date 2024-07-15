@@ -55,7 +55,7 @@ public class FrequencyPhrasesService {
                     .<FrequencyPhListDTO>builder()
                     .page(param.getPage()) //요청된 페이지 번호 설정
                     .pageScale(param.getPageScale())
-                    .totalCount(frequencyPhMapper.countAll(param))
+                    .totalCount(Optional.ofNullable(frequencyPhMapper.countAll(param)).orElse(0))
                     .items(Optional
                             .ofNullable(frequencyPhMapper.findAll(param))
                             .orElseGet(Collections::emptyList)

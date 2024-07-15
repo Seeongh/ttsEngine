@@ -14,7 +14,6 @@ public class AuthInterceptor  implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        log.info("언제호출? AuthInterceptor");
         registry.addInterceptor(authInterceptor)
                 .excludePathPatterns( "/_resource/**"); //정적 리소스 제외
     }
