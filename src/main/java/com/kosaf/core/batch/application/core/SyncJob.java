@@ -20,6 +20,7 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.scope.context.StepSynchronizationManager;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
@@ -32,7 +33,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import javax.batch.runtime.context.StepContext;
 import javax.sql.DataSource;
+import java.sql.SQLOutput;
 import java.util.*;
 
 /**
@@ -59,10 +62,14 @@ public class SyncJob {
     @Autowired
     private DataSource dataSource;
 
+    private int chunkSize = 10;
+
 
     @Bean(name = "syncKwJob")
     public Job syncJob(Step syncStep) {
         log.info(">>>syncJob");
+
+
         return jobBuilderFactory.get("syncKwJob")
                 .validator(new JobValidator())
                 .incrementer(new RunIdIncrementer())
@@ -74,12 +81,13 @@ public class SyncJob {
     @Bean("syncStep")
     public Step syncStep(ItemReader<ReplaceKw> trReplaceKwReader, ItemProcessor<ReplaceKw, ReplaceKw> trReplaceKwProcessor, ItemWriter<ReplaceKw> trReplaceKwWriter) {
         log.info(">>syncStep");
+
         return stepBuilderFactory.get("syncStep")
-                .<ReplaceKw, ReplaceKw>chunk(5) // 제네릭 타입을 명확하게 명시
+                .<ReplaceKw, ReplaceKw>chunk(chunkSize) // 제네릭 타입을 명확하게 명시
                 .reader(trReplaceKwReader)
                 .processor(trReplaceKwProcessor)
                 .writer(trReplaceKwWriter)
-                .listener(new CustomItemProcessListener((JdbcBatchItemWriter<ReplaceKw>) trReplaceKwWriter))
+              //  .listener(new CustomItemProcessListener((JdbcBatchItemWriter<ReplaceKw>) trReplaceKwWriter))
                 .build();
     }
 
@@ -87,6 +95,7 @@ public class SyncJob {
     @StepScope
     @Bean
     public ItemProcessor<ReplaceKw, ReplaceKw> trReplaceKwProcessor() {
+        log.info("ash ------ processor");
         return new ItemProcessor<ReplaceKw, ReplaceKw>() {
             Map<String,String> serverResult = serverCaller.SyncServer();
             //jobExecutionContext.put("serverResult", serverResult);
@@ -97,7 +106,7 @@ public class SyncJob {
                  * 서버 적재 내용과 db적재 내용 확인
                  */
                 if(item.getUseAt().equals(UseFilter.Y)) { //사용함 == 서버 등록됨
-                    if (serverResult.containsKey(item.getMainKw()) && !serverResult.get(item.getMainKw()).equals(item.getReplaceKw())) { //사용하는데 서버랑 다름
+                    if (serverResult.containsKey(item.getMainKw()) && !serverResult.get(item.getReplaceKw()).equals(item.getReplaceKw())) { //사용하는데 서버랑 다름
                         log.info("db != server  {} DB: {}, SERVER: {}", item.getMainKw(), item.getReplaceKw(),serverResult.get(item.getMainKw()) );
                         ReplaceKw updateKw = ReplaceKw.builder()
                                 .rkeywordSeq(item.getRkeywordSeq())
@@ -150,6 +159,7 @@ public class SyncJob {
     @StepScope
     @Bean
     public JdbcBatchItemWriter<ReplaceKw> trReplaceKwWriter() {
+        log.info("ash ------ writer");
         return new JdbcBatchItemWriterBuilder<ReplaceKw>()
                 .itemSqlParameterSourceProvider(new CustomItemSqlParameterSourceProvider<>())
                 .sql("UPDATE kosaf.replace_keyword_mast SET replace_kw = :replaceKw, use_at = :useAt, updt_dt= now() WHERE rkeyword_seq = :rkeywordSeq")
@@ -159,11 +169,12 @@ public class SyncJob {
     @StepScope
     @Bean
     public MyBatisPagingItemReader<ReplaceKw> trReplaceKwReader() {
+        log.info("ash ------ reader");
+
         return new MyBatisPagingItemReaderBuilder<ReplaceKw>()
                 .sqlSessionFactory(sqlSessionFactory)
-                .queryId("com.kosaf.core.api.replaceKeyword.infrastructure.ReplaceKeywordMapper.findAll")
-                .pageSize(10)
-                .parameterValues(Collections.emptyMap())
+                .queryId("com.kosaf.core.api.replaceKeyword.infrastructure.ReplaceKeywordMapper.findAllBatch")
+                .pageSize(chunkSize)
                 .build();
     }
 
