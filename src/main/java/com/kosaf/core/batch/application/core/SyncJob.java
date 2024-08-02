@@ -3,10 +3,7 @@ package com.kosaf.core.batch.application.core;
 import com.kosaf.core.api.replaceKeyword.domain.ReplaceKw;
 import com.kosaf.core.api.replaceKeyword.infrastructure.ReplaceKeywordMapper;
 import com.kosaf.core.api.replaceKeyword.value.UseFilter;
-import com.kosaf.core.batch.application.infrastructure.CustomItemProcessListener;
-import com.kosaf.core.batch.application.infrastructure.CustomItemSqlParameterSourceProvider;
-import com.kosaf.core.batch.application.infrastructure.JobLoggerListener;
-import com.kosaf.core.batch.application.infrastructure.JobValidator;
+import com.kosaf.core.batch.application.infrastructure.*;
 import com.kosaf.core.config.webClient.ServerCaller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +22,7 @@ import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,13 +60,13 @@ public class SyncJob {
     @Autowired
     private DataSource dataSource;
 
+
     private int chunkSize = 10;
 
 
     @Bean(name = "syncKwJob")
     public Job syncJob(Step syncStep) {
         log.info(">>>syncJob");
-
 
         return jobBuilderFactory.get("syncKwJob")
                 .validator(new JobValidator())
@@ -87,7 +85,7 @@ public class SyncJob {
                 .reader(trReplaceKwReader)
                 .processor(trReplaceKwProcessor)
                 .writer(trReplaceKwWriter)
-              //  .listener(new CustomItemProcessListener((JdbcBatchItemWriter<ReplaceKw>) trReplaceKwWriter))
+                .listener(new CustomStepExecutionListener())
                 .build();
     }
 
@@ -97,7 +95,8 @@ public class SyncJob {
     public ItemProcessor<ReplaceKw, ReplaceKw> trReplaceKwProcessor() {
         log.info("ash ------ processor");
         return new ItemProcessor<ReplaceKw, ReplaceKw>() {
-            Map<String,String> serverResult = serverCaller.SyncServer();
+            //Map<String,String> serverResult = serverCaller.SyncServer();
+            Map<String, String> serverResult = testSetting();
             //jobExecutionContext.put("serverResult", serverResult);
             @Override
             public ReplaceKw process(ReplaceKw item) throws Exception {
@@ -162,6 +161,7 @@ public class SyncJob {
         log.info("ash ------ writer");
         return new JdbcBatchItemWriterBuilder<ReplaceKw>()
                 .itemSqlParameterSourceProvider(new CustomItemSqlParameterSourceProvider<>())
+                //.itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
                 .sql("UPDATE kosaf.replace_keyword_mast SET replace_kw = :replaceKw, use_at = :useAt, updt_dt= now() WHERE rkeyword_seq = :rkeywordSeq")
                 .dataSource(dataSource)
                 .build();
@@ -178,4 +178,26 @@ public class SyncJob {
                 .build();
     }
 
+    public Map<String, String> testSetting() {
+        String input = "{App=앱, US $=유에스 $, GS SHOP=지에스 샵, H/W=하드웨어, CJONmart=씨제이온마트, 동의.=동이., 베스킨라빈스 31=베스킨라빈스 써리원, S/W=소프트웨어, 동의 =동이 , B&B=비엔비, US=유에스, Xi Jinping=시진핑, D&B=디엔비, USA=유에스에이, £=￡, USIM=유심, ¥=￥, KT&G=케이티엔지, M&A=엠엔에이, ₩=￦, A&P=에이엔피, 베스킨라빈스31=베스킨라빈스 써리원, R&B=알엔비, R&D=알엔디, iMBC=아이엠비씨, P&L=피엔엘, AT&T=에이티엔티}";
+
+        // Remove the curly braces at the beginning and end
+        input = input.substring(1, input.length() - 1);
+
+        // Split the string by ', ' to get the key-value pairs
+        String[] pairs = input.split(", (?=(?:[^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)");
+
+        Map<String, String> resultServer = new HashMap<>();
+
+        for (String pair : pairs) {
+            // Split each pair by the first '=' to get the key and value
+            String[] keyValue = pair.split("=", 2);
+            String key = keyValue[0].trim();
+            String value = keyValue[1].trim();
+
+            // Put the key and value into the map
+            resultServer.put(key, value);
+        }
+        return resultServer;
+    }
 }
