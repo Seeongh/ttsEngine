@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kosaf.core.api.log.infrastructure.WebLogMapper">
+
+<!--	<sql id="searchWebLog">-->
+<!--		<where>-->
+<!--			<if test="(startOccrrncDe != null and startOccrrncDe != '') and (endOccrrncDe != null and endOccrrncDe != '') ">-->
+<!--				AND occrrnc_de::TIMESTAMP BETWEEN #{startOccrrncDe}::TIMESTAMP-->
+<!--					AND #{endOccrrncDe}::TIMESTAMP + INTERVAL '1 day - 1 milliseconds'-->
+<!--			</if>-->
+<!--			<if test="searchCon != null">-->
+<!--				<if test="searchCon == '' ">-->
+<!--					AND ( login_id ILIKE CONCAT('%', TRIM(#{searchText}), '%')-->
+<!--						OR rqester_ip LIKE CONCAT('%', TRIM(#{searchText}), '%') )-->
+<!--				</if>-->
+<!--				<if test="searchCon == 'loginId' ">-->
+<!--					AND login_id ILIKE CONCAT('%', TRIM(#{searchText}) , '%')-->
+<!--				</if>-->
+<!--				<if test="searchCon == 'rqesterIp' ">-->
+<!--					AND rqester_ip LIKE CONCAT('%', TRIM(#{searchText}) , '%')-->
+<!--				</if>-->
+<!--			</if>-->
+<!--		</where>-->
+<!--	</sql>-->
+
+<!--	<select id="countAll" resultType="Integer">-->
+<!--		/* WebLogMapper.countAll */-->
+<!--		SELECT-->
+<!--			COUNT(log_seq)-->
+<!--		FROM-->
+<!--			public.com_weblog wl-->
+<!--		LEFT JOIN-->
+<!--			public.com_user_info cui-->
+<!--			ON wl.rqester_id = cui.sys_id-->
+<!--		<include refid="searchWebLog"></include>-->
+<!--	</select>-->
+
+<!--	<select id="findAll" resultType="com.kosaf.core.api.log.application.dto.weblog.WebLogDTO">-->
+<!--		/* WebLogMapper.findAll */-->
+<!--		SELECT-->
+<!--			ROW_NUMBER() OVER (order by occrrnc_de, occrrnc_time) AS list_no-->
+<!--			, log_seq-->
+<!--			, CONCAT(occrrnc_de, ' ', TO_CHAR(occrrnc_time, 'HH24:MI:SS')) AS log_dt-->
+<!--			, occrrnc_de-->
+<!--			, occrrnc_time-->
+<!--			, url-->
+<!--			, rqester_ip-->
+<!--			, rqester_id-->
+<!--			, cui.login_id-->
+<!--			, cui.user_nm-->
+<!--		FROM-->
+<!--			public.com_weblog wl-->
+<!--		LEFT JOIN-->
+<!--			public.com_user_info cui-->
+<!--			ON wl.rqester_id = cui.sys_id-->
+<!--		<include refid="searchWebLog"></include>-->
+<!--		ORDER BY-->
+<!--			occrrnc_de DESC-->
+<!--			, occrrnc_time DESC-->
+<!--		LIMIT	#{pageScale, jdbcType=INTEGER}-->
+<!--	    OFFSET	( #{page, jdbcType=INTEGER} - 1 ) * #{pageScale, jdbcType=INTEGER}-->
+<!--	</select>-->
+
+<!--	<select id="findByLogSeq" resultType="com.kosaf.core.api.log.application.dto.weblog.WebLogDetailDTO">-->
+<!--		/* WebLogMapper.findByLogSeq */-->
+<!--		SELECT-->
+<!--			log_seq-->
+<!--			, CONCAT(occrrnc_de, ' ', TO_CHAR(occrrnc_time, 'HH24:MI:SS')) AS log_dt-->
+<!--			, occrrnc_de-->
+<!--			, occrrnc_time-->
+<!--			, url-->
+<!--			, rqester_ip-->
+<!--			, rqester_id-->
+<!--			, cui.login_id-->
+<!--			, cui.user_nm-->
+<!--		FROM-->
+<!--			public.com_weblog wl-->
+<!--		LEFT JOIN-->
+<!--			public.com_user_info cui-->
+<!--			ON wl.rqester_id = cui.sys_id-->
+<!--		WHERE-->
+<!--			log_seq = #{logSeq}-->
+<!--	</select>-->
+
+<!--	<insert id="create">-->
+<!--		/* WebLogMapper.create */-->
+<!--		INSERT INTO-->
+<!--			public.com_weblog-->
+<!--			( occrrnc_de-->
+<!--			, occrrnc_time-->
+<!--			, url-->
+<!--			, rqester_ip-->
+<!--			, rqester_id )-->
+<!--		VALUES-->
+<!--			( NOW()::DATE-->
+<!--			, NOW()::TIMESTAMP-->
+<!--			, #{url}-->
+<!--			, #{rqesterIp}-->
+<!--			, #{rqesterId}::INTEGER )-->
+<!--	</insert>-->
+</mapper>

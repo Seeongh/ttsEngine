@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kosaf.core.api.log.infrastructure.SysLogMapper">
+
+<!--	<sql id="searchSysLog">-->
+<!--		<where>-->
+<!--			<if test="(startOccrrncDe != null and startOccrrncDe != '') and (endOccrrncDe != null and endOccrrncDe != '') ">-->
+<!--				AND occrrnc_de::TIMESTAMP BETWEEN #{startOccrrncDe}::TIMESTAMP-->
+<!--					AND #{endOccrrncDe}::TIMESTAMP + INTERVAL '1 day - 1 milliseconds'-->
+<!--			</if>-->
+<!--			<if test="processSeCd != null">-->
+<!--				AND process_se_cd = #{processSeCd}-->
+<!--			</if>-->
+<!--			<if test="errorYn != null and errorYn != '' ">-->
+<!--				AND error_yn = #{errorYn}-->
+<!--			</if>-->
+<!--			<if test="searchCon != null">-->
+<!--				<if test="searchCon == '' ">-->
+<!--					AND ( login_id ILIKE CONCAT('%', TRIM(#{searchText}), '%')-->
+<!--						OR method_nm ILIKE CONCAT('%', TRIM(#{searchText}), '%')-->
+<!--						OR svc_nm ILIKE CONCAT('%', TRIM(#{searchText}), '%') )-->
+<!--				</if>-->
+<!--				<if test="searchCon == 'loginId' ">-->
+<!--					AND login_id ILIKE CONCAT('%', TRIM(#{searchText}) , '%')-->
+<!--				</if>-->
+<!--				<if test="searchCon == 'methodNm' ">-->
+<!--					AND method_nm ILIKE CONCAT('%', TRIM(#{searchText}) , '%')-->
+<!--				</if>-->
+<!--				<if test="searchCon == 'svcNm' ">-->
+<!--					AND svc_nm ILIKE CONCAT('%', TRIM(#{searchText}) , '%')-->
+<!--				</if>-->
+<!--			</if>-->
+<!--		</where>-->
+<!--	</sql>-->
+
+<!--	<select id="countAll" resultType="Integer">-->
+<!--		/* SysLogMapper.countAll */-->
+<!--		SELECT-->
+<!--			COUNT(log_seq)-->
+<!--		FROM-->
+<!--			public.com_syslog sl-->
+<!--		LEFT JOIN-->
+<!--			public.com_user_info cui-->
+<!--			ON sl.rqester_id = cui.sys_id-->
+<!--		<include refid="searchSysLog"></include>-->
+<!--	</select>-->
+
+<!--	<select id="findAll" resultType="com.kosaf.core.api.log.application.dto.syslog.SysLogDTO">-->
+<!--		/* SysLogMapper.findAll */-->
+<!--		SELECT-->
+<!--			ROW_NUMBER() OVER (ORDER BY occrrnc_de, occrrnc_time) AS list_no-->
+<!--			, log_seq-->
+<!--			, occrrnc_de-->
+<!--			, occrrnc_time-->
+<!--			, CONCAT(occrrnc_de, ' ', TO_CHAR(occrrnc_time, 'HH24:MI:SS')) AS log_dt-->
+<!--			, svc_nm-->
+<!--			, method_nm-->
+<!--			, process_se_cd-->
+<!--			, rqester_id-->
+<!--			, error_yn-->
+<!--			, error_cd-->
+<!--			, cui.login_id-->
+<!--			, cui.user_nm-->
+<!--		FROM-->
+<!--			public.com_syslog sl-->
+<!--		LEFT JOIN-->
+<!--			public.com_user_info cui-->
+<!--			ON sl.rqester_id = cui.sys_id-->
+<!--		<include refid="searchSysLog"></include>-->
+<!--		ORDER BY-->
+<!--			occrrnc_de DESC-->
+<!--			, occrrnc_time DESC-->
+<!--		LIMIT	#{pageScale, jdbcType=INTEGER}-->
+<!--	    OFFSET	( #{page, jdbcType=INTEGER} - 1 ) * #{pageScale, jdbcType=INTEGER}-->
+<!--	</select>-->
+
+<!--	<select id="findByLogSeq" resultType="com.kosaf.core.api.log.application.dto.syslog.SysLogDetailDTO">-->
+<!--		/* SysLogMapper.findByLogSeq */-->
+<!--		SELECT-->
+<!--			log_seq-->
+<!--			, occrrnc_de-->
+<!--			, occrrnc_time-->
+<!--			, CONCAT(occrrnc_de, ' ', TO_CHAR(occrrnc_time, 'HH24:MI:SS')) AS log_dt-->
+<!--			, trget_menu_nm-->
+<!--			, svc_nm-->
+<!--			, method_nm-->
+<!--			, rqester_id-->
+<!--			, rqester_ip-->
+<!--			, process_se_cd-->
+<!--			, process_time-->
+<!--			, error_yn-->
+<!--			, error_cd-->
+<!--			, cui.login_id-->
+<!--			, cui.user_nm-->
+<!--		FROM-->
+<!--			public.com_syslog sl-->
+<!--		LEFT JOIN-->
+<!--			public.com_user_info cui-->
+<!--			ON sl.rqester_id = cui.sys_id-->
+<!--		WHERE-->
+<!--			log_seq = #{logSeq}-->
+<!--	</select>-->
+
+<!--	<insert id="create">-->
+<!--		/* SysLogMapper.create */-->
+<!--		INSERT INTO-->
+<!--			public.com_syslog-->
+<!--			( occrrnc_de-->
+<!--			, occrrnc_time-->
+<!--			, rqester_ip-->
+<!--			, rqester_id-->
+<!--			, trget_menu_nm-->
+<!--			, svc_nm-->
+<!--			, method_nm-->
+<!--			, process_se_cd-->
+<!--			, process_time-->
+<!--			, error_yn-->
+<!--			, error_cd )-->
+<!--		VALUES-->
+<!--			( NOW()::DATE-->
+<!--			, NOW()::TIMESTAMP-->
+<!--			, #{rqesterIp}-->
+<!--			, #{rqesterId}::INTEGER-->
+<!--			, #{trgetMenuNm}-->
+<!--			, #{svcNm}-->
+<!--			, #{methodNm}-->
+<!--			, #{processSeCd}-->
+<!--			, #{processTime}::NUMERIC-->
+<!--			, #{errorYn}-->
+<!--			, #{errorCd} )-->
+<!--	</insert>-->
+</mapper>

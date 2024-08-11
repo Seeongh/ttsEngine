@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kosaf.core.api.file.infrastructure.FileMapper">
+
+	<sql id="searchCriteria">
+		<where>
+		    AND cfd.file_seq = #{fileSeq, jdbcType=INTEGER}
+			AND cfd.del_yn = #{delYn}
+		</where>
+	</sql>
+	
+
+	<select id="countAll" resultType="Integer">
+	
+		/* FILE.countAll */
+		SELECT COUNT(*)
+		  FROM kosaf.com_file_dtl cfd
+		 
+		<include refid="searchCriteria"/>
+		
+	</select>
+
+	<select id="findAll" resultType="com.kosaf.core.api.file.application.dto.FileDTO">
+	
+		/* FILE.findAll */
+		SELECT cfd.file_dtl_seq 
+			   , cfd.file_seq 
+			   , cfd.file_sn 
+			   , cfd.file_stre_path 
+			   , cfd.stre_file_nm 
+			   , cfd.orignl_file_nm 
+			   , cfd.file_extsn 
+			   , cfd.file_size 
+			   , cfd.del_yn
+			   , TO_CHAR(cfd.reg_dt, 'YYYY-MM-DD HH24:MI:SS') AS reg_dt
+			   , cfd.rgtr_sys_id
+			   ,(SELECT cui.user_nm || '(' || cui.login_id || ')'
+				     FROM com_user_info cui
+				   WHERE cui.sys_id = cfd.rgtr_sys_id
+				 ) AS rgtr_sys_nm
+		  FROM kosaf.com_file_dtl cfd
+		
+		<include refid="searchCriteria"/>
+		
+	  ORDER BY cfd.file_sn ASC
+	  
+	</select>
+	
+	<select id="findById" resultType="com.kosaf.core.api.file.application.dto.FileDetailDTO">
+		
+		/* FILE.findById */
+		SELECT cfd.file_dtl_seq
+			   , cfd.file_seq 
+			   , cfd.file_sn 
+			   , cfd.file_stre_path 
+			   , cfd.stre_file_nm 
+			   , cfd.orignl_file_nm 
+			   , cfd.file_extsn 
+			   , cfd.file_size 
+			   , cfd.del_yn
+			   , TO_CHAR(cfd.reg_dt, 'YYYY-MM-DD HH24:MI:SS') AS reg_dt
+			   , cfd.rgtr_sys_id
+			   , cfd.mdfcn_dt
+			   , cfd.mdfr_sys_id
+			   , (SELECT cui.user_nm || '(' || cui.login_id || ')'
+				     FROM com_user_info cui
+				   WHERE cui.sys_id = cfd.rgtr_sys_id
+				 ) AS rgtr_sys_nm
+		  FROM kosaf.com_file_dtl cfd
+		 WHERE cfd.file_dtl_seq = #{fileDtlSeq, jdbcType=INTEGER}
+
+	</select>
+
+	<select id="findMaxFileSn" resultType="int">
+		
+		/* FILE.findMaxFileSn */
+		SELECT COALESCE(MAX(cfd.file_sn), 0) + 1 AS file_sn
+		  FROM kosaf.com_file cf
+	INNER JOIN kosaf.com_file_dtl cfd on cf.file_seq = cfd.file_seq
+	     WHERE cfd.del_yn = #{delYn}
+	       AND cf.file_seq = #{fileSeq, jdbcType=INTEGER}
+
+	</select>
+
+	<insert id="create" keyProperty="fileSeq" useGeneratedKeys="true">
+		
+		/* FILE.create */
+		INSERT
+		  INTO kosaf.com_file
+		  	   ( reg_dt
+		  	     , rgtr_sys_id 
+		  	   )
+		VALUES ( #{regDt}
+				 , #{rgtrSysId, jdbcType=INTEGER})
+		       )
+		
+	</insert>
+
+	<insert id="createFileDtlMulti">
+	
+		/* FILE.createFileDtlMulti */
+		INSERT
+		  INTO kosaf.com_file_dtl
+		  	   ( file_seq
+		  	     , file_sn
+		  	     , file_stre_path
+		  	     , stre_file_nm
+		  	     , orignl_file_nm
+		  	     , file_extsn
+		  	     , file_size
+		  	     , del_yn
+		  	     , reg_dt
+		  	     , rgtr_sys_id 
+		  	     , mdfcn_dt
+		  	     , mdfr_sys_id
+		  	   )
+		VALUES 
+			   <foreach collection="list" item="item" separator=",">
+			   (
+				   #{item.fileSeq, jdbcType=INTEGER}
+				, #{item.fileSn, jdbcType=INTEGER}
+				, #{item.fileStrePath}
+				, #{item.streFileNm}
+				, #{item.orignlFileNm}
+				, #{item.fileExtsn}
+				, #{item.fileSize, jdbcType=INTEGER}
+				, #{item.delYn}
+				, #{item.regDt}
+				, #{item.rgtrSysId, jdbcType=INTEGER}
+				, #{item.mdfcnDt}
+				, #{item.mdfrSysId, jdbcType=INTEGER}
+			   )
+			   </foreach>
+			   
+	</insert>
+	
+	<update id="deleteFileDtlMulti">
+		
+		UPDATE kosaf.com_file_dtl
+		   SET del_yn = #{delYn}
+		       , mdfcn_dt = #{mdfcnDt}
+		  	   , mdfr_sys_id = #{mdfrSysId, jdbcType=INTEGER}
+		 WHERE file_seq =  #{fileSeq, jdbcType=INTEGER}
+		   AND NOT EXISTS (
+    						SELECT 1
+    						FROM TABLE(CAST(#{fileDtlSeqArr} AS MY_ARRAY_TYPE)) item
+							WHERE item.COLUMN_VALUE = com_file_dtl.file_dtl_seq)
+						  )
+		       
+	</update>
+</mapper>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kosaf.core.api.role.infrastructure.RoleMapper">
+
+<!--	<select id="findAllSecurityResource" resultType="com.kosaf.core.config.security.application.dto.SecurityResourceDTO">-->
+
+<!--		/* Role.findAllSecurityResource */-->
+<!--		SELECT -->
+<!--				CAI.PATTERN -->
+<!--				, ARRAY_TO_STRING(ARRAY_AGG(CRAR.ROLE_ID),',')  AS ROLES-->
+<!--		FROM -->
+<!--				PUBLIC.COM_ROLE_AUTHOR_REL CRAR -->
+<!--		JOIN 	PUBLIC.COM_AUTHOR_INFO CAI 	ON 	CRAR.AUTHOR_ID = CAI.AUTHOR_ID-->
+<!--		GROUP BY CAI.PATTERN-->
+<!--		-->
+<!--	</select>-->
+<!--	-->
+<!--	<select id="findAllRoleHierarchy" resultType="com.kosaf.core.api.role.domain.RoleHierarchy">-->
+<!--	-->
+<!--		/* Role.findAllRoleHierarchy */-->
+<!--		SELECT -->
+<!--				PARENT_ROLE_ID -->
+<!--				, ROLE_ID -->
+<!--		FROM -->
+<!--				PUBLIC.COM_ROLE_HIERARCHY_INFO -->
+<!--		-->
+<!--	</select>-->
+
+</mapper>

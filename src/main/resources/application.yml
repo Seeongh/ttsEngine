@@ -1,0 +1,99 @@
+#application.yml
+
+server:
+  port: 8099
+
+spring:
+  profiles:
+    group:
+      dev : dev
+      prod : prod
+    active:
+    - dev
+
+---
+# dev
+spring:
+  config:
+    activate:
+      on-profile:
+      - dev
+      
+  datasource:
+    driver-class-name: net.sf.log4jdbc.DriverSpy
+    #url: jdbc:log4jdbc:postgresql://192.168.123.45:5432/kosaf
+    #username: mzhc
+    #password: mzhc
+    url: jdbc:log4jdbc:postgresql://localhost:5432/mzcore
+    username: postgres
+    password: MZHC
+
+  jpa:
+    open-in-view: false  
+    
+  mvc:
+    view:
+      prefix: /WEB-INF/views
+      suffix: .jsp
+
+  servlet:
+    multipart:
+      enabled: true
+      location: D:\\data\\mzcore\\
+      max-request-size: 10MB
+      max-file-size: 5MB
+
+  devtools:
+    livereload:
+      enabled: true
+
+  batch:
+    job:
+      names: syncKwJob
+      enabled: false
+#    jdbc:
+#      schema: ERS
+#      table-prefix: ERS.BATCH_
+
+#    jdbc:
+#      initialize-schema: ALWAYS
+mybatis:
+  mapper-locations: classpath:/mybatis/mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+  type-handlers-package: com.kosaf.core.config.mybatis
+---
+# prov
+spring:
+  config:
+    activate:
+      on-profile:
+      - prod
+      
+  datasource:
+    driver-class-name: net.sf.log4jdbc.DriverSpy
+    url: jdbc:log4jdbc:postgresql://192.168.123.45:5432/mzcore
+    username: mzcore
+    password: mzcore
+  
+  jpa:
+    open-in-view: false  
+    
+  mvc:
+    view:
+      prefix: /WEB-INF/views
+      suffix: .jsp
+
+  servlet:
+    multipart:
+      enabled: true
+      location: D:\\data\\mzcore\\
+      max-request-size: 10MB
+      max-file-size: 5MB
+
+mybatis:
+  mapper-locations: classpath:/mybatis/mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+  type-handlers-package: com.kosaf.core.config.mybatis
+    

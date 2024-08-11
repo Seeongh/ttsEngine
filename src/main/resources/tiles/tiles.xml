@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "tiles-config_3_0.dtd">
+
+<tiles-definitions>
+
+    <!-- core-layout -->
+    <definition name="core-layout" template="/WEB-INF/views/tiles/layout/coreLayout.jsp">
+        <put-attribute name="dtd" value="/WEB-INF/views/tiles/layout/dtd.jsp" />
+        <put-attribute name="core_body" value=""/>
+    </definition>
+    
+    <definition name="*/*.core" extends="core-layout">
+        <put-attribute name="core_body" value="/WEB-INF/views/{1}/{2}.jsp" />
+    </definition>
+    
+    <definition name="*/*/*.core" extends="core-layout">
+        <put-attribute name="core_body" value="/WEB-INF/views/{1}/{2}/{3}.jsp" />
+    </definition>
+    
+    <definition name="*/*/*/*.core" extends="core-layout">
+        <put-attribute name="core_body" value="/WEB-INF/views/{1}/{2}/{3}/{4}.jsp" />
+    </definition>
+    <!-- core-layout -->
+    
+    <!-- 기본 layout -->
+    <definition name="layout-tiles" template="/WEB-INF/views/tiles/layout/layout.jsp">
+        <put-attribute name="dtd" value="/WEB-INF/views/tiles/layout/dtd.jsp" />
+        <put-attribute name="header" value="/WEB-INF/views/tiles/layout/header.jsp"/>
+        <put-attribute name="left" value="/WEB-INF/views/tiles/layout/left.jsp"/>
+        <put-attribute name="popup" value="/WEB-INF/views/common/popup.jsp"/>
+<!--        <put-attribute name="footer" value="/WEB-INF/views/tiles/layout/footer.jsp"/> -->
+        <put-attribute name="body" value=""/>
+    </definition>
+    
+    <definition name="*/*" extends="layout-tiles">
+        <put-attribute name="body" value="/WEB-INF/views/{1}/{2}.jsp"/>
+    </definition>
+    
+    <definition name="*/*/*" extends="layout-tiles">
+        <put-attribute name="body" value="/WEB-INF/views/{1}/{2}/{3}.jsp"/>
+    </definition>
+    
+    <definition name="*/*/*/*" extends="layout-tiles">
+        <put-attribute name="body" value="/WEB-INF/views/{1}/{2}/{3}/{4}.jsp"/>
+    </definition>
+   <!-- 기본 layout -->
+    
+</tiles-definitions>

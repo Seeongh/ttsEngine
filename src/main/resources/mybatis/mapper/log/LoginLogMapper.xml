@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kosaf.core.api.log.infrastructure.LoginLogMapper">
+
+<!--	<sql id="searchLoginLog">-->
+<!--		<where>-->
+<!--			<if test="(startLogDt != null and startLogDt != '') and (endLogDt != null and endLogDt != '') ">-->
+<!--				AND log_dt BETWEEN #{startLogDt}::TIMESTAMP-->
+<!--					AND #{endLogDt}::TIMESTAMP + INTERVAL '1 day - 1 milliseconds'-->
+<!--			</if>-->
+<!--			<if test="conectSttusCd != null ">-->
+<!--				AND conect_sttus_cd = #{conectSttusCd}-->
+<!--			</if>-->
+<!--			<if test="searchCon != null">-->
+<!--				<if test="searchCon == '' ">-->
+<!--					AND ( login_id LIKE CONCAT('%', TRIM(#{searchText}), '%')-->
+<!--						OR conect_ip LIKE CONCAT('%', TRIM(#{searchText}), '%') )-->
+<!--				</if>-->
+<!--				<if test="searchCon == 'loginId' ">-->
+<!--					AND login_id LIKE CONCAT('%', TRIM(#{searchText}), '%')-->
+<!--				</if>-->
+<!--				<if test="searchCon == 'conectIp' ">-->
+<!--					AND conect_ip LIKE CONCAT('%', TRIM(#{searchText}), '%')-->
+<!--				</if>-->
+<!--			</if>-->
+<!--		</where>-->
+<!--	</sql>-->
+
+<!--	<select id="countAll" resultType="Integer">-->
+<!--		/* LoginLogMapper.countAll */-->
+<!--		SELECT-->
+<!--			COUNT(log_seq)-->
+<!--		FROM-->
+<!--			public.com_loginlog cl-->
+<!--		LEFT JOIN-->
+<!--			public.com_user_info cui-->
+<!--			ON cl.conect_id = cui.sys_id-->
+<!--		<include refid="searchLoginLog"></include>-->
+<!--	</select>-->
+
+<!--	<select id="findAll" resultType="com.kosaf.core.api.log.application.dto.loginlog.LoginLogDTO">-->
+<!--		/* LoginLogMapper.findAll */-->
+<!--		SELECT-->
+<!--			ROW_NUMBER() OVER (ORDER BY log_dt) AS list_no-->
+<!--			, log_seq-->
+<!--			, conect_sttus_cd-->
+<!--			, conect_id-->
+<!--			, conect_ip-->
+<!--			, conect_browser-->
+<!--			, log_dt-->
+<!--			, cui.login_id-->
+<!--			, cui.user_nm-->
+<!--		FROM-->
+<!--			public.com_loginlog cl-->
+<!--		LEFT JOIN-->
+<!--			public.com_user_info cui-->
+<!--			ON cl.conect_id = cui.sys_id-->
+<!--		<include refid="searchLoginLog"></include>-->
+<!--		ORDER BY-->
+<!--			log_dt DESC-->
+<!--		LIMIT	#{pageScale, jdbcType=INTEGER}-->
+<!--	    OFFSET	( #{page, jdbcType=INTEGER} - 1 ) * #{pageScale, jdbcType=INTEGER}-->
+<!--	</select>-->
+
+<!--	<select id="findByLogSeq" resultType="com.kosaf.core.api.log.application.dto.loginlog.LoginLogDetailDTO">-->
+<!--		/* LoginLogMapper.findByLogSeq */-->
+<!--		SELECT-->
+<!--			log_seq-->
+<!--			, conect_sttus_cd-->
+<!--			, conect_id-->
+<!--			, conect_ip-->
+<!--			, conect_os-->
+<!--			, conect_browser-->
+<!--			, error_cd-->
+<!--			, TO_CHAR(log_dt, 'YYYY-MM-DD HH24:MI:SS') AS log_dt-->
+<!--			, cui.login_id-->
+<!--			, cui.user_nm-->
+<!--		FROM-->
+<!--			public.com_loginlog cl-->
+<!--		LEFT JOIN-->
+<!--			public.com_user_info cui-->
+<!--			ON cl.conect_id = cui.sys_id-->
+<!--		WHERE-->
+<!--			log_seq = #{logSeq}-->
+<!--	</select>-->
+
+<!--	<insert id="create">-->
+<!--		/* LoginLogMapper.create */-->
+<!--		INSERT INTO-->
+<!--			public.com_loginlog-->
+<!--			( conect_sttus_cd-->
+<!--			, conect_id-->
+<!--			, conect_ip-->
+<!--			, conect_os-->
+<!--			, conect_browser-->
+<!--			, error_cd-->
+<!--			, log_dt )-->
+<!--		VALUES-->
+<!--			( #{conectSttusCd}-->
+<!--			, #{conectId}-->
+<!--			, #{conectIp}-->
+<!--			, #{conectOs}-->
+<!--			, #{conectBrowser}-->
+<!--			, #{errorCd}-->
+<!--			, NOW() )-->
+<!--	</insert>-->
+</mapper>

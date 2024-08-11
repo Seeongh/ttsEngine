@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kosaf.core.api.user.infrastructure.UserMapper">
+
+<!--	<select id="findByLoginId" resultType="com.kosaf.core.api.user.domain.User">-->
+
+<!--		/* User.findByLoginId */-->
+<!--		SELECT	-->
+<!--				SYS_ID-->
+<!--				, LOGIN_ID-->
+<!--				, USER_NM-->
+<!--				, BRTH-->
+<!--				, PSWD_ENCPT-->
+<!--				, TELNO_ENCPT-->
+<!--				, EML_ADDR-->
+<!--				, STTS_CD-->
+<!--				, LAST_LOCK_DT-->
+<!--				, PSWD_ERR_NMTN-->
+<!--				, PSWD_CHG_DT-->
+<!--				, DEL_YN-->
+<!--				, REG_DT-->
+<!--				, RGTR_SYS_ID-->
+<!--				, MDFCN_DT-->
+<!--				, MDFR_SYS_ID-->
+<!--		FROM	-->
+<!--				PUBLIC.COM_USER_INFO-->
+<!--		WHERE	LOGIN_ID = #{loginId}-->
+<!--		  AND	DEL_YN = 'N'-->
+<!--	</select>-->
+<!--	-->
+<!--	<select id="findRolesById" resultType="com.kosaf.core.api.role.domain.Role">-->
+<!--	-->
+<!--		/* User.findRolesById */-->
+<!--		SELECT	-->
+<!--				RI.ROLE_ID -->
+<!--				, RI.ROLE_NM -->
+<!--		FROM-->
+<!--				PUBLIC.COM_USER_ROLE_REL REL-->
+<!--		JOIN	PUBLIC.COM_ROLE_INFO RI	ON	REL.ROLE_ID = RI.ROLE_ID -->
+<!--		WHERE	REL.USER_SYS_ID = #{sysId}-->
+<!--	-->
+<!--	</select>-->
+<!--	-->
+<!--	<select id="userAndRoleByLoginId" resultType="com.kosaf.core.config.security.application.dto.CustomUserDetails">-->
+<!--		/* User.UserAndRoleByLoginId */-->
+<!--		SELECT	-->
+<!--				CUI.SYS_ID-->
+<!--				, CUI.LOGIN_ID-->
+<!--				, CUI.USER_NM-->
+<!--				, CUI.PSWD_ENCPT-->
+<!--				, ARRAY_TO_STRING(ARRAY_AGG(CURR.ROLE_ID),',')  AS ROLES-->
+<!--		FROM	-->
+<!--				PUBLIC.COM_USER_INFO CUI-->
+<!--		LEFT OUTER JOIN-->
+<!--				PUBLIC.COM_USER_ROLE_REL CURR	ON	CUI.SYS_ID = CURR.USER_SYS_ID -->
+<!--		WHERE	CUI.LOGIN_ID = #{loginId}-->
+<!--		  AND	CUI.DEL_YN = 'N'-->
+<!--		GROUP BY CUI.SYS_ID	, CUI.LOGIN_ID , CUI.USER_NM , CUI.PSWD_ENCPT -->
+<!--	</select>-->
+</mapper>

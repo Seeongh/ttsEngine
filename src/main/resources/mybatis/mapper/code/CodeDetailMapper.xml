@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kosaf.core.api.code.infrastructure.CodeDetailMapper">
+
+<!--	<sql id="codeDetailSearch">-->
+<!--		<where>-->
+<!--			gi.use_yn = 'Y'-->
+<!--			<if test="groupCd != null and groupCd != '' ">-->
+<!--				AND di.group_cd ILIKE CONCAT('%', #{groupCd}, '%')-->
+<!--			</if>-->
+<!--			<if test="searchCon == '' ">-->
+<!--				AND ( di.cd ILIKE CONCAT('%', #{searchText}, '%')-->
+<!--					OR di.cd_nm ILIKE CONCAT('%', #{searchText}, '%') )-->
+<!--			</if>-->
+<!--			<if test="searchCon == 'cd' ">-->
+<!--				AND di.cd ILIKE CONCAT('%', #{searchText}, '%')-->
+<!--			</if>-->
+<!--			<if test="searchCon == 'cdNm' ">-->
+<!--				AND di.cd_nm ILIKE CONCAT('%', #{searchText}, '%')-->
+<!--			</if>-->
+<!--		</where>-->
+<!--	</sql>-->
+
+<!--	<select id="countAll" resultType="integer">-->
+<!--		/* CodeMapper.countAll */-->
+<!--		SELECT-->
+<!--			COUNT(di.cd)-->
+<!--		FROM-->
+<!--			public.com_cd_dtl_info di-->
+<!--		LEFT JOIN-->
+<!--			com_cd_group_info gi-->
+<!--			ON di.group_cd = gi.group_cd-->
+<!--		<include refid="codeDetailSearch"></include>-->
+<!--	</select>-->
+
+<!--	<select id="findAll" resultType="com.kosaf.core.api.code.application.dto.detail.CodeDetailListDTO">-->
+<!--		/* CodeDetailMapper.findAll */-->
+<!--		SELECT-->
+<!--			ROW_NUMBER() OVER (ORDER BY gi.reg_dt, di.group_cd DESC, di.ordr DESC) AS list_no-->
+<!--			, di.group_cd-->
+<!--			, gi.cd_nm AS group_cd_nm-->
+<!--			, di.cd-->
+<!--			, di.cd_nm-->
+<!--			, di.expln-->
+<!--			, di.ordr-->
+<!--			, di.use_yn-->
+<!--			, di.reg_dt-->
+<!--		FROM-->
+<!--			public.com_cd_dtl_info di-->
+<!--		LEFT JOIN-->
+<!--			com_cd_group_info gi-->
+<!--			ON di.group_cd = gi.group_cd-->
+<!--		<include refid="codeDetailSearch"></include>-->
+<!--		ORDER BY-->
+<!--			gi.reg_dt DESC, di.group_cd, di.ordr-->
+<!--		LIMIT  #{pageScale, jdbcType=INTEGER}-->
+<!--	    OFFSET ( #{page, jdbcType=INTEGER} - 1 ) * #{pageScale, jdbcType=INTEGER}-->
+<!--	</select>-->
+
+<!--	<select id="findAllByGroupCd" resultType="com.kosaf.core.api.code.application.dto.detail.CodeDetailDTO">-->
+<!--		/* CodeDetailMapper.findByGroupCdAndCd */-->
+<!--		SELECT-->
+<!--			di.group_cd-->
+<!--			, gi.cd_nm AS group_cd_nm-->
+<!--			, di.cd-->
+<!--			, di.cd_nm-->
+<!--			, di.expln-->
+<!--			, di.ordr-->
+<!--			, di.use_yn-->
+<!--			, di.reg_dt-->
+<!--		FROM-->
+<!--			public.com_cd_dtl_info di-->
+<!--		LEFT JOIN-->
+<!--			com_cd_group_info gi-->
+<!--			ON di.group_cd = gi.group_cd-->
+<!--		WHERE-->
+<!--			di.group_cd = TRIM( #{groupCd} )-->
+<!--	</select>-->
+
+<!--	<select id="findByGroupCdAndCd" resultType="com.kosaf.core.api.code.application.dto.detail.CodeDetailDTO">-->
+<!--		/* CodeDetailMapper.findByGroupCdAndCd */-->
+<!--		SELECT-->
+<!--			di.group_cd-->
+<!--			, gi.cd_nm AS group_cd_nm-->
+<!--			, di.cd-->
+<!--			, di.cd_nm-->
+<!--			, di.expln-->
+<!--			, di.ordr-->
+<!--			, di.use_yn-->
+<!--			, di.reg_dt-->
+<!--		FROM-->
+<!--			public.com_cd_dtl_info di-->
+<!--		LEFT JOIN-->
+<!--			com_cd_group_info gi-->
+<!--			ON di.group_cd = gi.group_cd-->
+<!--		WHERE-->
+<!--			di.group_cd = TRIM( #{groupCd} )-->
+<!--			AND di.cd = TRIM( #{cd} )-->
+<!--	</select>-->
+
+<!--	<insert id="create" useGeneratedKeys="true">-->
+<!--		/* CodeDetailMapper.create */-->
+<!--		INSERT INTO-->
+<!--			public.com_cd_dtl_info-->
+<!--			( cd-->
+<!--			, group_cd-->
+<!--			, cd_nm-->
+<!--			, expln-->
+<!--			, ordr-->
+<!--			, reg_dt-->
+<!--			, rgtr_sys_id-->
+<!--			, mdfcn_dt-->
+<!--			, mdfr_sys_id )-->
+<!--		VALUES-->
+<!--			( #{cd}-->
+<!--			, #{groupCd}-->
+<!--			, #{cdNm}-->
+<!--			, #{expln}-->
+<!--			, #{ordr}::INTEGER-->
+<!--			, NOW()-->
+<!--			, #{rgtrSysId}-->
+<!--			, NOW()-->
+<!--			, #{rgtrSysId} )-->
+<!--	</insert>-->
+
+<!--	<update id="update">-->
+<!--		/* CodeDetailMapper.update */-->
+<!--		UPDATE-->
+<!--			public.com_cd_dtl_info ccdi-->
+<!--		<set>-->
+<!--			<if test="cdNm != null and cdNm != '' ">-->
+<!--				cd_nm = #{cdNm},-->
+<!--			</if>-->
+<!--			<if test="expln != null and expln != '' ">-->
+<!--				expln = #{expln},-->
+<!--			</if>-->
+<!--			<if test="mdfrSysId != null and mdfrSysId != '' ">-->
+<!--				mdfr_sys_id = #{mdfrSysId},-->
+<!--			</if>-->
+<!--			<if test="ordr != null and ordr != '' ">-->
+<!--				ordr = #{ordr}::INTEGER,-->
+<!--			</if>-->
+<!--			<if test="useYn != null">-->
+<!--				use_yn = #{useYn},-->
+<!--			</if>-->
+<!--			mdfcn_dt = NOW()-->
+<!--		</set>-->
+<!--		WHERE-->
+<!--			group_cd = TRIM( #{groupCd} )-->
+<!--			AND cd = TRIM( #{cd} )-->
+<!--	</update>-->
+
+</mapper>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kosaf.core.api.frequencyPhrases.infrastructure.FrequencyPhrasesMapper">
+    <sql id="searchCriteria">
+        <where>
+            <if test='useAt != null and useAt != ""'>
+                AND use_at = #{useAt}
+            </if>
+            <if test='keyword != null and keyword != ""'>
+                AND frequency_ph LIKE '%' || #{keyword} || '%'
+            </if>
+        </where>
+    </sql>
+
+    <insert id="create" parameterType="com.kosaf.core.api.frequencyPhrases.domain.FrequencyPh">
+        INSERT INTO kosaf.frequent_ph_mast (frequency_ph, use_at, regist_id, updt_id)
+        VALUES (
+        #{frequencyPh},
+        #{useAt},
+        #{registId},
+        #{registId}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.kosaf.core.api.frequencyPhrases.domain.FrequencyPh">
+        UPDATE kosaf.frequent_ph_mast
+        SET
+        frequency_ph = #{frequencyPh},
+        use_at = #{useAt},
+        updt_id = #{registId},
+        updt_dt = CURRENT_TIMESTAMP
+        WHERE phrase_seq = #{phraseSeq}
+    </update>
+
+    <select id="findByString" parameterType="String" resultType="com.kosaf.core.api.frequencyPhrases.domain.FrequencyPh">
+        SELECT
+        *
+        FROM
+        kosaf.frequent_ph_mast
+        WHERE
+        frequency_ph = #{frequencyPh}
+    </select>
+
+    <select id="findById" parameterType="com.kosaf.core.api.frequencyPhrases.application.dto.FrequencyPhListParam" resultType="com.kosaf.core.api.frequencyPhrases.domain.FrequencyPh">
+        SELECT
+        *
+        FROM
+        kosaf.frequent_ph_mast
+        WHERE phrase_seq = #{phraseSeq}
+    </select>
+
+    <select id="findAll" parameterType="com.kosaf.core.api.frequencyPhrases.application.dto.FrequencyPhListParam" resultType="com.kosaf.core.api.frequencyPhrases.domain.FrequencyPh">
+        SELECT
+        ROW_NUMBER() OVER(ORDER BY regist_dt ASC) AS phrase_no, phrase_seq,frequency_ph,
+        use_at,
+        updt_id,
+        TO_CHAR(updt_dt, 'YYYY-MM-DD HH24:MI') AS updt_dt,
+        TO_CHAR(regist_dt, 'YYYY-MM-DD HH24:MI') AS regist_dt
+        FROM
+        kosaf.frequent_ph_mast
+        <include refid="searchCriteria"/>
+        ORDER BY
+        regist_dt DESC
+        LIMIT #{pageScale, jdbcType=INTEGER} OFFSET ( #{page, jdbcType=INTEGER} - 1 ) * #{pageScale, jdbcType=INTEGER}
+    </select>
+
+    <select id="countAll" parameterType="com.kosaf.core.api.frequencyPhrases.application.dto.FrequencyPhListParam" resultType="int">
+        SELECT
+        COUNT(*)
+        FROM
+        kosaf.frequent_ph_mast
+        <include refid="searchCriteria"/>
+    </select>
+</mapper>

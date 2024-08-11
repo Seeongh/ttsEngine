@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kosaf.core.api.member.infrastructure.MemberMapper">
+
+<!--	<select id="countAll" resultType="Integer">-->
+
+<!--		/* MEMBER.countAll */-->
+<!--		SELECT	COUNT(*)-->
+<!--		  FROM	test_member m-->
+
+<!--		<include refid="searchCriteria"/>-->
+
+<!--	</select>-->
+
+
+<!--	<select id="findAll" resultType="com.kosaf.core.api.member.domain.Member">-->
+
+<!--		/* MEMBER.findAll */-->
+<!--		SELECT	m.member_no-->
+<!--				, m.member_name-->
+<!--				, m.gender-->
+<!--				, m.mobile-->
+<!--				, m.address-->
+<!--				, m.reg_dt-->
+<!--		  FROM	test_member m-->
+
+<!--	  	<include refid="searchCriteria"/>-->
+
+<!--	  ORDER BY	member_no ASC-->
+<!--	     LIMIT	#{pageScale, jdbcType=INTEGER}-->
+<!--	    OFFSET	( #{page, jdbcType=INTEGER} - 1 ) * #{pageScale, jdbcType=INTEGER}-->
+<!--	</select>-->
+
+<!--	<select id="findById" resultType="com.kosaf.core.api.member.domain.Member">-->
+
+<!--		/* MEMBER.findById */-->
+<!--		SELECT	m.member_no-->
+<!--				, m.member_name-->
+<!--				, m.gender-->
+<!--				, m.mobile-->
+<!--				, m.address-->
+<!--				, m.member_status-->
+<!--				, m.reg_dt-->
+<!--				, m.updt_dt-->
+<!--		  FROM	test_member m-->
+<!--		 WHERE	m.member_no = #{memberNo}-->
+
+<!--	</select>-->
+
+<!--	<sql id="searchCriteria">-->
+<!--		<where>-->
+<!--				AND	m.member_status = #{memberStatus}-->
+<!--			<if test="gender != null">-->
+<!--				AND	m.gender = #{gender}-->
+<!--			</if>-->
+<!--			<if test="memberName != null">-->
+<!--				AND	m.member_name LIKE CONCAT('%', #{memberName}, '%')-->
+<!--			</if>-->
+<!--		</where>-->
+<!--	</sql>-->
+
+<!--	<insert id="create" keyProperty="memberNo" useGeneratedKeys="true">-->
+
+<!--		/* MEMBER.create */-->
+<!--		INSERT-->
+<!--		  INTO	test_member-->
+<!--		  		( member_name-->
+<!--				 , gender-->
+<!--				 , mobile-->
+<!--				 , address-->
+<!--				 , member_status-->
+<!--				 , reg_dt-->
+<!--		  		)-->
+<!--		VALUES	(-->
+<!--				  #{memberName}-->
+<!--				  , #{gender}-->
+<!--				  , #{mobile}-->
+<!--				  , #{address}-->
+<!--				  , #{memberStatus}-->
+<!--				  , #{regDt}-->
+<!--				)-->
+
+<!--	</insert>-->
+
+<!--	<update id="update">-->
+
+<!--		/* MEMBER.update */-->
+<!--		UPDATE	test_member-->
+<!--		   SET	member_name = #{memberName}-->
+<!--				, mobile = #{mobile}-->
+<!--				, address = #{address}-->
+<!--				, updt_dt = #{updtDt}-->
+<!--		 WHERE	member_no = #{memberNo}-->
+<!--		   AND	member_status = #{memberStatus}-->
+
+<!--	</update>-->
+
+<!--	<update id="delete">-->
+
+<!--		/* MEMBER.delete */-->
+<!--		UPDATE	test_member-->
+<!--		   SET	member_status = #{memberStatus}-->
+<!--				, del_dt = #{delDt}-->
+<!--		 WHERE	member_no = #{memberNo}-->
+
+<!--	</update>-->
+
+</mapper>

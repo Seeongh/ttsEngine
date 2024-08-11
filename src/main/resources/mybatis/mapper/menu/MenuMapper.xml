@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kosaf.core.api.menu.infrastructure.MenuMapper">
+
+<!--    <select id="findByRoot" resultType="com.kosaf.core.api.menu.domain.Menu">-->
+<!--        /* menu.findByRoot - 상위 메뉴 불러오기 */-->
+<!--        WITH RECURSIVE ROLE_HIERARCHY AS (-->
+<!--		    SELECT -->
+<!--		          CRH.ROLE_ID-->
+<!--		        , CRH.PARENT_ROLE_ID-->
+<!--		    FROM PUBLIC.COM_ROLE_HIERARCHY_INFO CRH-->
+<!--		    JOIN USER_INFO UI ON ( CRH.PARENT_ROLE_ID = UI.ROLE_ID OR CRH.ROLE_ID = UI.ROLE_ID )-->
+<!--		    -->
+<!--		    UNION ALL-->
+<!--		  -->
+<!--		    SELECT -->
+<!--		          RHI.ROLE_ID-->
+<!--		        , RHI.PARENT_ROLE_ID-->
+<!--		    FROM PUBLIC.COM_ROLE_HIERARCHY_INFO RHI-->
+<!--		    JOIN ROLE_HIERARCHY RH ON ( RHI.PARENT_ROLE_ID = RH.ROLE_ID )-->
+<!--		), USER_INFO AS (-->
+<!--		    SELECT-->
+<!--		        URR.ROLE_ID -->
+<!--		    FROM PUBLIC.COM_USER_ROLE_REL URR-->
+<!--		    WHERE USER_SYS_ID = #{userSysId}-->
+<!--		), ROLE_IDS AS (-->
+<!--		    SELECT -->
+<!--		        C.ROLE_ID-->
+<!--		    FROM (-->
+<!--		        SELECT -->
+<!--		              ROLE_ID  -->
+<!--		        FROM ROLE_HIERARCHY-->
+<!--		        -->
+<!--		        UNION ALL -->
+<!--		        -->
+<!--		        SELECT -->
+<!--                    PARENT_ROLE_ID AS ROLE_ID-->
+<!--                FROM ROLE_HIERARCHY-->
+<!--                WHERE (SELECT COUNT(*) FROM ROLE_HIERARCHY) <![CDATA[ > ]]> 1-->
+<!--		        ) C-->
+<!--		    GROUP BY ROLE_ID -->
+<!--		) -->
+<!--		SELECT -->
+<!--		      CMI.MENU_NO -->
+<!--		    , CMI.MENU_NM -->
+<!--		    , CMI.URL -->
+<!--		    , CMI.EXPLN -->
+<!--		    , CMI.PARENT_MENU_NO -->
+<!--		    , CMI.ORDR -->
+<!--		    , CMI.REG_DT -->
+<!--		    , CMI.RGTR_SYS_ID -->
+<!--		    , CMI.MDFCN_DT -->
+<!--		    , CMI.MDFR_SYS_ID-->
+<!--		FROM PUBLIC.COM_MENU_INFO CMI-->
+<!--		JOIN (-->
+<!--		    SELECT-->
+<!--		        MENU_NO-->
+<!--		    FROM PUBLIC.COM_ROLE_MENU_CRT_REL-->
+<!--		    WHERE ROLE_ID IN (SELECT ROLE_ID FROM ROLE_IDS)-->
+<!--		    GROUP BY MENU_NO -->
+<!--		) AS CRMR ON ( CMI.MENU_NO = CRMR.MENU_NO )-->
+<!--		WHERE CMI.PARENT_MENU_NO = #{parentMenuNo} -->
+<!--    </select>-->
+
+<!--    <select id="findBySubMenu" resultType="com.kosaf.core.api.menu.domain.Menu">-->
+<!--        /* menu.findBySubMenu - 하위 메뉴 목록 불러오기 */-->
+<!--        WITH RECURSIVE USER_INFO AS (-->
+<!--            /* 1.사용자 시스템 ID를 받아서 보유중인 ROLE_ID 찾기 */-->
+<!--            SELECT-->
+<!--                URR.ROLE_ID -->
+<!--            FROM PUBLIC.COM_USER_ROLE_REL URR-->
+<!--            WHERE USER_SYS_ID = #{userSysId}-->
+<!--        ), ROLE_HIERARCHY AS (-->
+<!--            /* 2.찾은 ROLE_ID로 상위-하위 ROLE_ID 찾기  */-->
+<!--            SELECT -->
+<!--		          CRH.ROLE_ID-->
+<!--		        , CRH.PARENT_ROLE_ID-->
+<!--		    FROM PUBLIC.COM_ROLE_HIERARCHY_INFO CRH-->
+<!--		    JOIN USER_INFO UI ON ( CRH.PARENT_ROLE_ID = UI.ROLE_ID OR CRH.ROLE_ID = UI.ROLE_ID )-->
+<!--            -->
+<!--            UNION ALL-->
+<!--          -->
+<!--            SELECT -->
+<!--                  RHI.ROLE_ID-->
+<!--                , RHI.PARENT_ROLE_ID-->
+<!--            FROM PUBLIC.COM_ROLE_HIERARCHY_INFO RHI-->
+<!--            JOIN ROLE_HIERARCHY RH ON ( RHI.PARENT_ROLE_ID = RH.ROLE_ID )-->
+<!--        ), ROLE_IDS AS (-->
+<!--            /* 3. 찾은 ROLE_ID 그룹핑 */-->
+<!--            SELECT -->
+<!--                RI.ROLE_ID-->
+<!--            FROM (-->
+<!--                SELECT -->
+<!--                      ROLE_ID  -->
+<!--                FROM ROLE_HIERARCHY-->
+<!--                -->
+<!--                UNION ALL -->
+
+<!--                SELECT -->
+<!--                    PARENT_ROLE_ID AS ROLE_ID-->
+<!--                FROM ROLE_HIERARCHY-->
+<!--                WHERE (SELECT COUNT(*) FROM ROLE_HIERARCHY) <![CDATA[ > ]]> 1-->
+<!--                ) RI-->
+<!--            GROUP BY RI.ROLE_ID -->
+<!--        ), SUB_MENU_INFO AS (-->
+<!--            /* 4. 그룹핑 된 ROLE_ID를 통해 하위 메뉴 재귀 */-->
+<!--            SELECT -->
+<!--                  CMI.MENU_NO  /* 메뉴 번호 */-->
+<!--                , CMI.PARENT_MENU_NO  /* 부모 메뉴 번호 */-->
+<!--                , LPAD( CAST( CMI.ORDR AS VARCHAR ), 5, '0' ) AS SORT_ORDER  /* 정렬 순서 */-->
+<!--            FROM PUBLIC.COM_MENU_INFO CMI-->
+<!--            JOIN PUBLIC.COM_ROLE_MENU_CRT_REL CRMR ON ( CMI.MENU_NO = CRMR.MENU_NO )-->
+<!--            WHERE CMI.PARENT_MENU_NO = #{parentMenuNo} /* 하위 메뉴 조건 */-->
+<!--            AND CRMR.ROLE_ID IN ((SELECT ROLE_ID FROM ROLE_IDS))-->
+<!--            -->
+<!--            UNION ALL-->
+<!--            -->
+<!--            SELECT -->
+<!--                  CMI.MENU_NO  /* 메뉴 번호 */-->
+<!--                , CMI.PARENT_MENU_NO  /* 부모 메뉴 번호 */-->
+<!--                , CONCAT( SMI.SORT_ORDER, <![CDATA[ '>' ]]>, LPAD( CAST( CMI.ORDR AS VARCHAR ), 5, '0' ) ) AS SORT_ORDER  /* 정렬 순서 */-->
+<!--            FROM PUBLIC.COM_MENU_INFO CMI-->
+<!--            JOIN SUB_MENU_INFO SMI ON ( CMI.PARENT_MENU_NO = SMI.MENU_NO )-->
+<!--            JOIN PUBLIC.COM_ROLE_MENU_CRT_REL CRMR ON ( CMI.MENU_NO = CRMR.MENU_NO )-->
+<!--            WHERE CMI.PARENT_MENU_NO <![CDATA[ <> ]]> CMI.MENU_NO  /* PARENT_MENU_NO 이 본인이 아닌 경우만 재귀 하도록 */-->
+<!--            AND CRMR.ROLE_ID IN ((SELECT ROLE_ID FROM ROLE_IDS))-->
+<!--        ), SUB_MENU_NO AS (-->
+<!--            /* 5. 재귀쿼리로 뽑은 메뉴목록 그룹핑 */-->
+<!--            SELECT-->
+<!--                  SMN.MENU_NO-->
+<!--                , SMN.SORT_ORDER-->
+<!--            FROM ( -->
+<!--                    SELECT-->
+<!--                          MENU_NO-->
+<!--                        , SORT_ORDER-->
+<!--                    FROM SUB_MENU_INFO-->
+<!--                ) SMN-->
+<!--            GROUP BY MENU_NO ,SORT_ORDER-->
+<!--        )-->
+<!--        /* 6.그룹핑 한 MENU_NO, SORT_ORDER를 통한 메뉴 목록출력 및 정렬  */-->
+<!--        SELECT -->
+<!--              CMI.MENU_NO                    /* 메뉴 번호 */-->
+<!--            , CMI.MENU_NM                    /* 메뉴 이름 */-->
+<!--            , COALESCE(CMI.URL, '#') AS URL  /* URL */-->
+<!--            , CMI.EXPLN                      /* 설명 */-->
+<!--            , CMI.PARENT_MENU_NO             /* 부모 메뉴 번호 */-->
+<!--            , CMI.ORDR                       /* 정렬 */-->
+<!--            , CMI.MENU_LV                    /* 메뉴의 레벨 */-->
+<!--            , CMI.REG_DT                     /* 등록일시 */-->
+<!--            , CMI.RGTR_SYS_ID                /* 등록자ID */-->
+<!--            , CMI.MDFCN_DT                   /* 수정일시 */-->
+<!--            , CMI.MDFR_SYS_ID                /* 수정자ID */-->
+<!--        FROM PUBLIC.COM_MENU_INFO CMI-->
+<!--        JOIN ( SELECT  MENU_NO, SORT_ORDER FROM SUB_MENU_NO ) SUB ON ( SUB.MENU_NO = CMI.MENU_NO )-->
+<!--        ORDER BY SUB.SORT_ORDER ASC-->
+<!--    </select>-->
+<!--    -->
+<!--    <select id="findByTree" resultType="com.kosaf.core.api.menu.domain.Menu">-->
+<!--        /* menu.findByTree - 메뉴관리(트리목록) 불러오기 */-->
+<!--        WITH RECURSIVE TREE_MENU AS (-->
+<!--            SELECT -->
+<!--                  CMI.MENU_NO  /* 메뉴 번호 */-->
+<!--                , CMI.MENU_NM  /* 메뉴 이름 */-->
+<!--                , CMI.URL      /* URL */-->
+<!--                , CMI.EXPLN    /* 설명 */-->
+<!--                , CMI.PARENT_MENU_NO  /* 부모 메뉴 번호 */-->
+<!--                , CMI.ORDR     /* 정렬 */-->
+<!--                , LPAD( CAST( CMI.ORDR AS VARCHAR ), 5, '0' ) AS SORT_ORDER  /* 정렬 순서 */-->
+<!--                , CMI.MENU_LV     /* 메뉴의 레벨 */-->
+<!--                , CMI.REG_DT      /* 등록일시 */-->
+<!--                , CMI.RGTR_SYS_ID /* 등록자ID */-->
+<!--                , CMI.MDFCN_DT    /* 수정일시 */-->
+<!--                , CMI.MDFR_SYS_ID /* 수정자ID */-->
+<!--            FROM PUBLIC.COM_MENU_INFO CMI-->
+<!--            WHERE CMI.MENU_LV = 0-->
+<!--            -->
+<!--            UNION ALL-->
+<!--            -->
+<!--            SELECT -->
+<!--                  CMI.MENU_NO  /* 메뉴 번호 */-->
+<!--                , CMI.MENU_NM  /* 메뉴 이름 */-->
+<!--                , CMI.URL      /* URL */-->
+<!--                , CMI.EXPLN    /* 설명 */-->
+<!--                , CMI.PARENT_MENU_NO  /* 부모 메뉴 번호 */-->
+<!--                , CMI.ORDR     /* 정렬 */-->
+<!--                , CONCAT( TM.SORT_ORDER, <![CDATA[ '>' ]]>, LPAD( CAST( CMI.ORDR AS VARCHAR ), 5, '0' ) ) AS SORT_ORDER  /* 정렬 순서 */-->
+<!--                , CMI.MENU_LV     /* 메뉴의 레벨 */-->
+<!--                , CMI.REG_DT      /* 등록일시 */-->
+<!--                , CMI.RGTR_SYS_ID /* 등록자ID */-->
+<!--                , CMI.MDFCN_DT    /* 수정일시 */-->
+<!--                , CMI.MDFR_SYS_ID /* 수정자ID */-->
+<!--            FROM PUBLIC.COM_MENU_INFO CMI-->
+<!--            JOIN TREE_MENU TM ON ( CMI.PARENT_MENU_NO = TM.MENU_NO )-->
+<!--            WHERE CMI.PARENT_MENU_NO <![CDATA[ <> ]]> CMI.MENU_NO  /* PARENT_MENU_NO 이 본인이 아닌 경우만 재귀 하도록 */-->
+<!--        )-->
+<!--        SELECT -->
+<!--              MENU_NO                    /* 메뉴 번호 */-->
+<!--            , MENU_NM                    /* 메뉴 이름 */-->
+<!--            , COALESCE(URL, '#') AS URL  /* URL */-->
+<!--            , EXPLN                      /* 설명 */-->
+<!--            , PARENT_MENU_NO             /* 부모 메뉴 번호 */-->
+<!--            , ORDR                       /* 정렬 */-->
+<!--            , MENU_LV                    /* 메뉴의 레벨 */-->
+<!--            , REG_DT                     /* 등록일시 */-->
+<!--            , RGTR_SYS_ID                /* 등록자ID */-->
+<!--            , MDFCN_DT                   /* 수정일시 */-->
+<!--            , MDFR_SYS_ID                /* 수정자ID */-->
+<!--        FROM TREE_MENU-->
+<!--        ORDER BY SORT_ORDER ASC-->
+<!--    </select>-->
+<!--    -->
+<!--    <insert id="create">-->
+<!--        /* menu.create - 메뉴등록 */-->
+<!--        INSERT INTO PUBLIC.COM_MENU_INFO (-->
+<!--		      MENU_NO-->
+<!--		    , MENU_NM-->
+<!--		    , URL-->
+<!--		    , EXPLN-->
+<!--		    , PARENT_MENU_NO-->
+<!--		    , ORDR-->
+<!--		    , REG_DT-->
+<!--		    , RGTR_SYS_ID-->
+<!--		    , MDFCN_DT-->
+<!--		    , MDFR_SYS_ID-->
+<!--		    , MENU_LV -->
+<!--		) VALUES (-->
+<!--		      #{menuNo}-->
+<!--		    , #{menuNm}-->
+<!--		    , #{url}-->
+<!--		    , #{expln}-->
+<!--		    , #{parentMenuNo}-->
+<!--		    , #{ordr}-->
+<!--		    , #{regDt}-->
+<!--		    , #{rgtrSysId}-->
+<!--		    , #{mdfcnDt}-->
+<!--		    , #{mdfrSysId}-->
+<!--		    , #{menuLv}-->
+<!--		)-->
+<!--    </insert>-->
+<!--    -->
+<!--    <update id="update">-->
+<!--        /* menu.update - 메뉴수정 */-->
+<!--        UPDATE PUBLIC.COM_MENU_INFO SET -->
+<!--		      MENU_NM        =  #{menuNm}          -->
+<!--		    , URL            =  #{url}            -->
+<!--		    , EXPLN          =  #{expln}       -->
+<!--		    , PARENT_MENU_NO =  #{parentMenuNo}-->
+<!--		    , ORDR           =  #{ordr}        -->
+<!--		    , MDFCN_DT       =  #{mdfcnDt} -->
+<!--		    , MDFR_SYS_ID    =  #{mdfrSysId}   -->
+<!--		    , MENU_LV        =  #{menuLv}-->
+<!--		WHERE MENU_NO = #{menuNo}-->
+<!--    </update>-->
+
+<!--    <select id="findByMenu" resultType="com.kosaf.core.api.menu.domain.Menu">-->
+<!--        /* menu.findBymenu - 메뉴 상세 조회 */-->
+<!--        SELECT-->
+<!--              MENU_NO-->
+<!--            , MENU_NM-->
+<!--            , URL-->
+<!--            , EXPLN-->
+<!--            , PARENT_MENU_NO-->
+<!--            , ORDR-->
+<!--            , MENU_LV-->
+<!--            , REG_DT-->
+<!--            , RGTR_SYS_ID-->
+<!--            , MDFCN_DT-->
+<!--            , MDFR_SYS_ID-->
+<!--        FROM PUBLIC.COM_MENU_INFO-->
+<!--        WHERE MENU_NO = #{menuNo}-->
+<!--    </select>-->
+<!--    -->
+<!--    <delete id="delete">-->
+<!--        /* menu.delete - 메뉴 삭제 */-->
+<!--        DELETE -->
+<!--        FROM PUBLIC.COM_MENU_INFO -->
+<!--        WHERE MENU_NO = #{menuNo} -->
+<!--    </delete>-->
+<!--    -->
+<!--    <sql id="searchCriteria">-->
+<!--        <where>-->
+<!--            <if test="searchKeyword != null and searchKeyword != ''">-->
+<!--                AND CRI.ROLE_ID LIKE CONCAT('%', #{searchKeyword}, '%')-->
+<!--            </if>-->
+<!--        </where>-->
+<!--    </sql>-->
+<!--    -->
+<!--    <select id="findByRoleAll" resultType="com.kosaf.core.api.menu.application.dto.RoleListDTO">-->
+<!--        /* menu.findByRoleAll - 메뉴설정 권한 목록 */-->
+<!--        SELECT-->
+<!--              ROW_NUMBER () OVER (ORDER BY CRI.REG_DT ASC) AS ROW_NUM-->
+<!--		    , CRI.ROLE_ID-->
+<!--		    , CRI.ROLE_NM-->
+<!--		    , CRI.EXPLN-->
+<!--		    , CRI.REG_DT-->
+<!--		    , CRI.RGTR_SYS_ID-->
+<!--		    , CRI.MDFCN_DT-->
+<!--		    , CRI.MDFR_SYS_ID-->
+<!--		FROM PUBLIC.COM_ROLE_INFO CRI-->
+<!--        <include refid="searchCriteria"></include>-->
+<!--        ORDER BY CRI.REG_DT DESC-->
+<!--        LIMIT  #{pageScale, jdbcType=INTEGER}-->
+<!--        OFFSET  ( #{page, jdbcType=INTEGER} - 1 ) * #{pageScale, jdbcType=INTEGER}-->
+<!--    </select>-->
+<!--    -->
+<!--    <select id="findByRoleAllCount" resultType="Integer">-->
+<!--        /* menu.findByRoleAllCount - 메뉴설정 권한 목록 수 */-->
+<!--        SELECT -->
+<!--		    COUNT(*)-->
+<!--		FROM PUBLIC.COM_ROLE_INFO CRI-->
+<!--        <include refid="searchCriteria"></include>-->
+<!--    </select>-->
+
+<!--    <select id="findByRoleId" resultType="com.kosaf.core.api.menu.domain.Menu">-->
+<!--        /* menu.findByRoleId - 권한 별 메뉴 목록 가져오기 */-->
+<!--        SELECT -->
+<!--            MENU_NO-->
+<!--        FROM PUBLIC.COM_ROLE_MENU_CRT_REL-->
+<!--        WHERE ROLE_ID = #{roleId}-->
+<!--    </select>-->
+<!--    -->
+<!--    <delete id="deleteRoleByMenu">-->
+<!--        /* menu.deleteRoleByMenu - 권한별 메뉴 삭제 */-->
+<!--        DELETE -->
+<!--        FROM PUBLIC.COM_ROLE_MENU_CRT_REL-->
+<!--        WHERE ROLE_ID = #{roleId}-->
+<!--    </delete>-->
+<!--    -->
+<!--    <insert id="createRoleByMenus">-->
+<!--        /* menu.createRoleByMenus - 권한별 메뉴 생성 */-->
+<!--        INSERT INTO PUBLIC.COM_ROLE_MENU_CRT_REL-->
+<!--        (-->
+<!--              ROLE_ID-->
+<!--            , MENU_NO-->
+<!--            , REG_DT-->
+<!--            , RGTR_SYS_ID-->
+<!--        ) VALUES (-->
+<!--              #{roleId}-->
+<!--            , #{menuNo}-->
+<!--            , #{regDt}-->
+<!--            , #{rgtrSysId}-->
+<!--        )-->
+<!--    -->
+<!--    </insert>-->
+
+</mapper>

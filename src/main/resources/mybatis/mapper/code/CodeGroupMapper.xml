@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kosaf.core.api.code.infrastructure.CodeGroupMapper">
+
+<!--	<sql id="codeSearch">-->
+<!--		<where>-->
+<!--			<if test="searchCon != null">-->
+<!--				<if test="searchCon == '' ">-->
+<!--					AND ( group_cd ILIKE CONCAT('%', #{searchText}, '%')-->
+<!--						OR cd_nm LIKE CONCAT('%', #{searchText}, '%') )-->
+<!--				</if>-->
+<!--				<if test="searchCon == 'groupCd' ">-->
+<!--					AND group_cd ILIKE CONCAT('%', #{searchText}, '%')-->
+<!--				</if>-->
+<!--				<if test="searchCon == 'cdNm' ">-->
+<!--					AND cd_nm LIKE CONCAT('%', #{searchText}, '%')-->
+<!--				</if>-->
+<!--			</if>-->
+<!--			<if test="useYn != null">-->
+<!--				AND use_yn = #{useYn}-->
+<!--			</if>-->
+<!--		</where>-->
+<!--	</sql>-->
+
+<!--	<select id="countAll" resultType="Integer">-->
+<!--		/* CodeGroupMapper.countAll */-->
+<!--		SELECT-->
+<!--			COUNT(group_cd)-->
+<!--		FROM-->
+<!--			public.com_cd_group_info-->
+<!--		<include refid="codeSearch"></include>-->
+<!--	</select>-->
+
+<!--	<select id="findAll" resultType="com.kosaf.core.api.code.application.dto.group.CodeGroupListDTO">-->
+<!--		/* CodeGroupMapper.findAll */-->
+<!--		SELECT-->
+<!--			ROW_NUMBER() OVER (ORDER BY reg_dt) AS list_no-->
+<!--		  	, group_cd-->
+<!--		  	, cd_nm-->
+<!--		  	, use_yn-->
+<!--		  	, reg_dt-->
+<!--		FROM-->
+<!--			public.com_cd_group_info-->
+<!--		<include refid="codeSearch"></include>-->
+<!--		ORDER BY-->
+<!--			reg_dt DESC-->
+<!--		LIMIT	 #{pageScale, jdbcType=INTEGER}-->
+<!--	    OFFSET	 ( #{page, jdbcType=INTEGER} - 1 ) * #{pageScale, jdbcType=INTEGER}-->
+<!--	</select>-->
+
+<!--	<select id="findByGroupCd" resultType="com.kosaf.core.api.code.application.dto.group.CodeGroupDetailDTO">-->
+<!--		/* CodeGroupMapper.findByGroupCd */-->
+<!--		SELECT-->
+<!--			  gi.group_cd-->
+<!--			, gi.cd_nm-->
+<!--			, gi.expln-->
+<!--			, gi.use_yn-->
+<!--			, gi.reg_dt-->
+<!--			, gi.rgtr_sys_id-->
+<!--			, gi.mdfcn_dt-->
+<!--			, gi.mdfr_sys_id-->
+<!--		FROM-->
+<!--			public.com_cd_group_info gi-->
+<!--		WHERE-->
+<!--			gi.group_cd = TRIM(UPPER( #{groupCd} ))-->
+<!--	</select>-->
+
+
+<!--	<insert id="create">-->
+<!--		/* CodeGroupMapper.create */-->
+<!--		INSERT INTO-->
+<!--			public.com_cd_group_info-->
+<!--			( group_cd-->
+<!--			, cd_nm-->
+<!--			, expln-->
+<!--			, reg_dt-->
+<!--		 	, rgtr_sys_id-->
+<!--		 	, mdfcn_dt-->
+<!--		 	, mdfr_sys_id )-->
+<!--		VALUES-->
+<!--			( TRIM(UPPER( #{groupCd} ))-->
+<!--			, #{cdNm}-->
+<!--			, #{expln}-->
+<!--			, NOW()-->
+<!--			, #{rgtrSysId}-->
+<!--			, NOW()-->
+<!--			, #{rgtrSysId} );-->
+<!--	</insert>-->
+
+<!--	<update id="update">-->
+<!--		/* CodeGroupMapper.update */-->
+<!--		UPDATE-->
+<!--			public.com_cd_group_info-->
+<!--		<set>-->
+<!--			<if test="cdNm != null and cdNm != '' ">-->
+<!--				cd_nm = #{cdNm},-->
+<!--			</if>-->
+<!--			<if test="expln != null">-->
+<!--				expln = #{expln},-->
+<!--			</if>-->
+<!--			<if test="useYn != null">-->
+<!--				use_yn = #{useYn},-->
+<!--			</if>-->
+<!--			<if test="mdfrSysId != null and mdfrSysId != '' ">-->
+<!--				mdfr_sys_id = #{mdfrSysId}::INTEGER,-->
+<!--			</if>-->
+<!--			mdfcn_dt = NOW()-->
+<!--		</set>-->
+<!--		WHERE-->
+<!--			group_cd = TRIM( #{groupCd} )-->
+<!--	</update>-->
+
+</mapper>

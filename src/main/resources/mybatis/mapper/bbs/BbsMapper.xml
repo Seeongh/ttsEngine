@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kosaf.core.api.bbs.infrastructure.BbsMapper">
+
+<!--	<sql id="searchCriteria">-->
+<!--		<where>-->
+<!--			<if test="delYn != null and !delYn.equals('')">-->
+<!--				AND eb.del_yn = #{delYn}-->
+<!--			</if>-->
+<!--			<if test="searchStartDt != null and searchStartDt != ''">-->
+<!--				AND TO_CHAR(eb.reg_dt, 'YYYY-MM-DD') >= #{searchStartDt}-->
+<!--			</if>-->
+<!--			<if test="searchEndDt != null and searchEndDt != ''">-->
+<!--				AND TO_CHAR(eb.reg_dt, 'YYYY-MM-DD') <![CDATA[<=]]> #{searchEndDt}-->
+<!--			</if>-->
+<!--			<if test="searchKeyword != null and searchKeyword != ''">-->
+<!--				<choose>-->
+<!--					<when test="searchCondition != null and searchCondition.equals('TITLE')">-->
+<!--						AND eb.title ILIKE CONCAT('%', #{searchKeyword}, '%')-->
+<!--					</when>-->
+<!--					<when test="searchCondition != null and searchCondition.equals('CONTENTS')">-->
+<!--						AND eb.contents ILIKE CONCAT('%', #{searchKeyword}, '%')-->
+<!--					</when>-->
+<!--					<otherwise>-->
+<!--						AND (eb.title ILIKE CONCAT('%', #{searchKeyword}, '%')-->
+<!--						 OR eb.contents ILIKE CONCAT('%', #{searchKeyword}, '%'))-->
+<!--					</otherwise>-->
+<!--				</choose>-->
+<!--			</if>-->
+<!--		</where>-->
+<!--	</sql>-->
+<!--	-->
+<!--	<select id="countAll" resultType="Integer">-->
+<!--	-->
+<!--		/* BBS.countAll */-->
+<!--		SELECT COUNT(*)-->
+<!--		  FROM ex_bbs eb -->
+<!--		-->
+<!--		<include refid="searchCriteria"/>-->
+<!--		-->
+<!--	</select>-->
+<!--	-->
+<!--	<select id="findAll" resultType="com.kosaf.core.api.bbs.application.dto.BbsDTO">-->
+<!--		-->
+<!--		/* BBS.findAll */-->
+<!--		SELECT ROW_NUMBER() OVER(ORDER BY eb.reg_dt ASC) AS ROWNUM-->
+<!--		       , eb.bbs_seq-->
+<!--		       , eb.file_seq-->
+<!--		       , eb.title-->
+<!--		       , eb.contents-->
+<!--		       , eb.inq_cnt-->
+<!--		       , TO_CHAR(eb.reg_dt, 'YYYY-MM-DD HH24:MI:SS') AS reg_dt-->
+<!--		       , eb.rgtr_sys_id-->
+<!--		       , ( SELECT CONCAT(cui.user_nm, '(', cui.login_id, ')')-->
+<!--		             FROM com_user_info cui -->
+<!--		            WHERE cui.sys_id = eb.rgtr_sys_id-->
+<!--		         ) AS rgtr_sys_nm-->
+<!--		       , ( CASE WHEN eb.file_seq IS NOT NULL THEN 'Y'-->
+<!--		           ELSE 'N' END -->
+<!--		         ) AS file_yn-->
+<!--		  FROM ex_bbs eb-->
+<!--		-->
+<!--		<include refid="searchCriteria"/>-->
+<!--	  ORDER BY ROWNUM DESC-->
+<!--	  LIMIT #{pageScale, jdbcType=INTEGER} OFFSET ( #{page, jdbcType=INTEGER} - 1 ) * #{pageScale, jdbcType=INTEGER}-->
+<!--	   -->
+<!--	</select>-->
+<!--	-->
+<!--	<select id="findById" resultType="com.kosaf.core.api.bbs.application.dto.BbsDetailDTO">-->
+<!--	-->
+<!--		/* BBS.findById */-->
+<!--		SELECT eb.bbs_seq-->
+<!--		       , eb.file_seq-->
+<!--		       , eb.title-->
+<!--		       , eb.contents-->
+<!--		       , eb.inq_cnt-->
+<!--		       , eb.del_yn-->
+<!--		       , TO_CHAR(eb.reg_dt, 'YYYY-MM-DD HH24:MI:SS') AS reg_dt-->
+<!--		       , eb.rgtr_sys_id-->
+<!--		       , ( SELECT CONCAT(cui.user_nm, '(', cui.login_id, ')')-->
+<!--		             FROM com_user_info cui -->
+<!--		            WHERE cui.sys_id = eb.rgtr_sys_id-->
+<!--		         ) AS rgtr_sys_nm-->
+<!--		  FROM ex_bbs eb-->
+<!--		 WHERE eb.bbs_seq = #{bbsSeq}::INTEGER-->
+<!--		 -->
+<!--	</select>-->
+<!--	-->
+<!--	<update id="updateInqCnt">-->
+<!--		-->
+<!--		/* Bbs.updateInqCnt */-->
+<!--		UPDATE ex_bbs-->
+<!--		   SET inq_cnt = inq_cnt + 1-->
+<!--		 WHERE bbs_seq = #{bbsSeq}::INTEGER-->
+<!--		   AND del_yn = #{delYn}-->
+<!--		   AND rgtr_sys_id != #{mdfrSysId}::INTEGER-->
+<!--		   -->
+<!--	</update>-->
+<!--	-->
+<!--	<insert id="create" keyProperty="bbsSeq" useGeneratedKeys="true">-->
+<!--	-->
+<!--		/* BBS.create */-->
+<!--		INSERT-->
+<!--		  INTO ex_bbs-->
+<!--		       ( file_seq-->
+<!--		         , title-->
+<!--		         , contents-->
+<!--		         , inq_cnt-->
+<!--		         , del_yn-->
+<!--		         , reg_dt-->
+<!--		         , rgtr_sys_id-->
+<!--		         , mdfcn_dt-->
+<!--		         , mdfr_sys_id-->
+<!--		       )-->
+<!--	    VALUES (-->
+<!--	    		 #{fileSeq}::INTEGER-->
+<!--	    		 , #{title}-->
+<!--	    		 , #{contents}-->
+<!--	    		 , #{inqCnt}::INTEGER-->
+<!--	    		 , #{delYn}-->
+<!--	    		 , #{regDt}-->
+<!--	    		 , #{rgtrSysId}::INTEGER-->
+<!--	    		 , #{mdfcnDt}-->
+<!--	    		 , #{mdfrSysId}::INTEGER-->
+<!--	           )-->
+<!--	           -->
+<!--	</insert>-->
+<!--	-->
+<!--	<update id="update">-->
+<!--	-->
+<!--		/* BBS.update */-->
+<!--		UPDATE ex_bbs-->
+<!--		   SET file_seq = #{fileSeq}::INTEGER-->
+<!--		       , title = #{title}-->
+<!--		       , contents = #{contents}-->
+<!--		       , mdfcn_dt = #{mdfcnDt}-->
+<!--		       , mdfr_sys_id = #{mdfrSysId}::INTEGER-->
+<!-- 		 WHERE bbs_seq = #{bbsSeq}::INTEGER-->
+<!--		   AND del_yn = #{delYn}-->
+<!--		  -->
+<!--	</update>-->
+<!--	-->
+<!--	<update id="delete">-->
+<!--	-->
+<!--		/* BBS.delete */-->
+<!--		UPDATE ex_bbs-->
+<!--		   SET del_yn = #{delYn}-->
+<!--		       , mdfcn_dt = #{mdfcnDt}-->
+<!--		       , mdfr_sys_id = #{mdfrSysId}::INTEGER-->
+<!--		 WHERE bbs_seq = #{bbsSeq}::INTEGER-->
+<!--		 -->
+<!--	</update>-->
+</mapper>

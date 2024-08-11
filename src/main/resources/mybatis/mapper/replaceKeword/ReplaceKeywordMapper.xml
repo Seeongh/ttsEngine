@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--db : replace_keyword_mast-->
+<!--    rkeyword_seq,
+    main_kw,
+    replace_kw,
+    use_at,
+    등록일수정일관련담당자 생략-->
+
+<mapper namespace="com.kosaf.core.api.replaceKeyword.infrastructure.ReplaceKeywordMapper">
+    <sql id="searchCriteria">
+        <where>
+            <if test='useAt != null and useAt != ""'>
+                AND use_at = #{useAt}
+            </if>
+            <if test='keyword != null and keyword != ""'>
+                AND main_kw LIKE '%' || #{keyword} || '%'
+            </if>
+        </where>
+    </sql>
+
+    <insert id="create" parameterType="com.kosaf.core.api.replaceKeyword.domain.ReplaceKw">
+        INSERT INTO kosaf.replace_keyword_mast (main_kw, replace_kw, use_at, regist_id, updt_id)
+        VALUES (
+        #{mainKw},
+        #{replaceKw},
+        #{useAt},
+        #{registId},
+        #{registId}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.kosaf.core.api.replaceKeyword.domain.ReplaceKw">
+        UPDATE kosaf.replace_keyword_mast
+        SET
+        replace_kw = #{replaceKw},
+        use_at = #{useAt},
+        updt_id = #{registId},
+        updt_dt = CURRENT_TIMESTAMP
+        WHERE rkeyword_seq = #{rkeywordSeq}
+    </update>
+
+    <select id="findByString" parameterType="String" resultType="com.kosaf.core.api.replaceKeyword.domain.ReplaceKw">
+        SELECT
+        *
+        FROM
+        kosaf.replace_keyword_mast
+        WHERE
+        main_kw = #{keyword}
+    </select>
+
+    <select id="findById" parameterType="com.kosaf.core.api.replaceKeyword.application.dto.ReplaceKwListParam" resultType="com.kosaf.core.api.replaceKeyword.domain.ReplaceKw">
+        SELECT
+        *
+        FROM
+        kosaf.replace_keyword_mast
+        WHERE
+        rkeyword_seq = #{rkeywordSeq}
+    </select>
+
+    <select id="findAll" parameterType="com.kosaf.core.api.replaceKeyword.application.dto.ReplaceKwListParam" resultType="com.kosaf.core.api.replaceKeyword.domain.ReplaceKw">
+        SELECT
+        ROW_NUMBER() OVER(ORDER BY regist_dt ASC) AS replaceKw_no,
+        rkeyword_seq,
+        main_kw,
+        replace_kw,
+        use_at,
+        updt_id,
+        TO_CHAR(updt_dt, 'YYYY-MM-DD HH24:MI') AS updt_dt,
+        TO_CHAR(regist_dt, 'YYYY-MM-DD HH24:MI') AS regist_dt
+        FROM
+        kosaf.replace_keyword_mast
+        <include refid="searchCriteria"/>
+        ORDER BY
+        regist_dt DESC
+         LIMIT #{pageScale, jdbcType=INTEGER} OFFSET ( #{page, jdbcType=INTEGER} - 1 ) * #{pageScale, jdbcType=INTEGER}
+
+    </select>
+
+    <select id="countAll" parameterType="com.kosaf.core.api.replaceKeyword.application.dto.ReplaceKwListParam" resultType="int">
+        SELECT
+        COUNT(*)
+        FROM
+        kosaf.replace_keyword_mast
+        <include refid="searchCriteria"/>
+    </select>
+
+    <select id="findAllBatch" parameterType="com.kosaf.core.api.replaceKeyword.application.dto.ReplaceKwListParam" resultType="com.kosaf.core.api.replaceKeyword.domain.ReplaceKw">
+
+            SELECT
+                *, ROWNUM AS RN
+            FROM
+                kosaf.replace_keyword_mast
+            OFFSET #{_skiprows} LIMIT #{_pagesize}
+            ORDER BY
+              regist_dt DESC
+    </select>
+
+    <select id="updateBatch" >
+        UPDATE kosaf.replace_keyword_mast
+        SET replace_kw = #{replaceKw}
+            , use_at = #{useAt}
+            , updt_dt= now()
+        WHERE rkeyword_seq = #{rkeywordSeq}
+    </select>
+</mapper>
