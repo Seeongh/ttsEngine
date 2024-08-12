@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.batch.MyBatisPagingItemReader;
+import org.mybatis.spring.batch.builder.MyBatisBatchItemWriterBuilder;
 import org.mybatis.spring.batch.builder.MyBatisPagingItemReaderBuilder;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -57,6 +58,7 @@ public class SyncJob {
     @Autowired
     private ServerCaller serverCaller;
 
+
     @Autowired
     private DataSource dataSource;
 
@@ -75,6 +77,7 @@ public class SyncJob {
                 .start(syncStep)
                 .build();
     }
+
     @JobScope
     @Bean("syncStep")
     public Step syncStep(ItemReader<ReplaceKw> trReplaceKwReader, ItemProcessor<ReplaceKw, ReplaceKw> trReplaceKwProcessor, ItemWriter<ReplaceKw> trReplaceKwWriter) {
@@ -97,6 +100,7 @@ public class SyncJob {
         return new ItemProcessor<ReplaceKw, ReplaceKw>() {
             //Map<String,String> serverResult = serverCaller.SyncServer();
             Map<String, String> serverResult = testSetting();
+
             //jobExecutionContext.put("serverResult", serverResult);
             @Override
             public ReplaceKw process(ReplaceKw item) throws Exception {
@@ -104,52 +108,54 @@ public class SyncJob {
                 /**
                  * 서버 적재 내용과 db적재 내용 확인
                  */
-                if(item.getUseAt().equals(UseFilter.Y)) { //사용함 == 서버 등록됨
-                    if (serverResult.containsKey(item.getMainKw()) && !serverResult.get(item.getReplaceKw()).equals(item.getReplaceKw())) { //사용하는데 서버랑 다름
-                        log.info("db != server  {} DB: {}, SERVER: {}", item.getMainKw(), item.getReplaceKw(),serverResult.get(item.getMainKw()) );
-                        ReplaceKw updateKw = ReplaceKw.builder()
-                                .rkeywordSeq(item.getRkeywordSeq())
-                                .mainKw(item.getMainKw())
-                                .replaceKw(serverResult.get(item.getMainKw())) //replace  서버에 싱크를 맞춤
-                                .useAt(UseFilter.Y)
-                                .build();
-
-                        return updateKw;
-                    }
-                    else {
-                        if (serverResult.containsKey(item.getMainKw())) { //사용하고 서버에 등록도됨
-                            log.info("db == server {}", item.getMainKw());
-                            return null;
-                        }
-                        else { //DB에서는 사용하는데 서버에 등록 안됨
-                            log.info("db Y, server N {}", item.getMainKw());
-                            ReplaceKw updateKw = ReplaceKw.builder()
-                                    .rkeywordSeq(item.getRkeywordSeq())
-                                    .mainKw(item.getMainKw())
-                                    .replaceKw(item.getReplaceKw())
-                                    .useAt(UseFilter.N) //사용 안함으로 변경
-                                    .build();
-
-                            return updateKw;
-                        }
-                    }
-                }
-                else { //DB에서는 사용 안하는데 서버에 등록된경우
-                    if (serverResult.containsKey(item.getMainKw())) {
-                        log.info("db N, server Y {}/{}", item.getMainKw(), item.getReplaceKw());
-                        ReplaceKw updateKw = ReplaceKw.builder()
-                                .rkeywordSeq(item.getRkeywordSeq())
-                                .mainKw(item.getMainKw())
-                                .replaceKw(serverResult.get(item.getMainKw())) //서버 결과로 사용
-                                .useAt(UseFilter.Y) //사용 함으로 변경
-                                .build();
-
-                        return updateKw;
-                    }
-                    else { //DB엔 사용안함으로 있는데 서버에도 없는 경우
-                        return null;
-                    }
-                }
+                log.info("엥 = {}", item.getMainKw());
+                return item;
+//                if(item.getUseAt().equals(UseFilter.Y)) { //사용함 == 서버 등록됨
+//                    if (serverResult.containsKey(item.getMainKw()) && !serverResult.get(item.getReplaceKw()).equals(item.getReplaceKw())) { //사용하는데 서버랑 다름
+//                        log.info("db != server  {} DB: {}, SERVER: {}", item.getMainKw(), item.getReplaceKw(),serverResult.get(item.getMainKw()) );
+//                        ReplaceKw updateKw = ReplaceKw.builder()
+//                                .rkeywordSeq(item.getRkeywordSeq())
+//                                .mainKw(item.getMainKw())
+//                                .replaceKw(serverResult.get(item.getMainKw())) //replace  서버에 싱크를 맞춤
+//                                .useAt(UseFilter.Y)
+//                                .build();
+//
+//                        return updateKw;
+//                    }
+//                    else {
+//                        if (serverResult.containsKey(item.getMainKw())) { //사용하고 서버에 등록도됨
+//                            log.info("db == server {}", item.getMainKw());
+//                            return null;
+//                        }
+//                        else { //DB에서는 사용하는데 서버에 등록 안됨
+//                            log.info("db Y, server N {}", item.getMainKw());
+//                            ReplaceKw updateKw = ReplaceKw.builder()
+//                                    .rkeywordSeq(item.getRkeywordSeq())
+//                                    .mainKw(item.getMainKw())
+//                                    .replaceKw(item.getReplaceKw())
+//                                    .useAt(UseFilter.N) //사용 안함으로 변경
+//                                    .build();
+//
+//                            return updateKw;
+//                        }
+//                    }
+//                }
+//                else { //DB에서는 사용 안하는데 서버에 등록된경우
+//                    if (serverResult.containsKey(item.getMainKw())) {
+//                        log.info("db N, server Y {}/{}", item.getMainKw(), item.getReplaceKw());
+//                        ReplaceKw updateKw = ReplaceKw.builder()
+//                                .rkeywordSeq(item.getRkeywordSeq())
+//                                .mainKw(item.getMainKw())
+//                                .replaceKw(serverResult.get(item.getMainKw())) //서버 결과로 사용
+//                                .useAt(UseFilter.Y) //사용 함으로 변경
+//                                .build();
+//
+//                        return updateKw;
+//                    }
+//                    else { //DB엔 사용안함으로 있는데 서버에도 없는 경우
+//                        return null;
+//                    }
+//                }
             }
 
         };
@@ -158,14 +164,20 @@ public class SyncJob {
     @StepScope
     @Bean
     public JdbcBatchItemWriter<ReplaceKw> trReplaceKwWriter() {
-        log.info("ash ------ writer");
+        log.info("ash ------ writer: {} ", dataSource.toString());
+
         return new JdbcBatchItemWriterBuilder<ReplaceKw>()
-                .itemSqlParameterSourceProvider(new CustomItemSqlParameterSourceProvider<>())
-                //.itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
-                .sql("UPDATE kosaf.replace_keyword_mast SET replace_kw = :replaceKw, use_at = :useAt, updt_dt= now() WHERE rkeyword_seq = :rkeywordSeq")
                 .dataSource(dataSource)
+                .sql("UPDATE kosaf.replace_keyword_mast SET use_at = 'Y' where rkeyword_seq = :rkeywordSeq")
+                .beanMapped()
                 .build();
+//        return new MyBatisBatchItemWriterBuilder<ReplaceKw>()
+//                .sqlSessionFactory(sqlSessionFactory)
+//                .statementId("com.kosaf.core.api.replaceKeyword.infrastructure.ReplaceKeywordMapper.updateBatch")
+//                .assertUpdates(false)
+//                .build();
     }
+
     @StepScope
     @Bean
     public MyBatisPagingItemReader<ReplaceKw> trReplaceKwReader() {
