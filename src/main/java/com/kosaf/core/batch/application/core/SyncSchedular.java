@@ -18,7 +18,7 @@ public class SyncSchedular {
 
 
    //@Scheduled(cron = "0 0 0 * * ?") // 매일 자정에 실행
-   @Scheduled(cron = "0 * * * * ?") //매분 1초에 실행
+     @Scheduled(cron = "0 * * * * ?") //매분 1초에 실행
     public void perform() throws Exception {
        long page = 1L;
        long pageScale = 10L;
