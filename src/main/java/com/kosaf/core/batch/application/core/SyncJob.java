@@ -64,7 +64,7 @@ public class SyncJob {
     private DataSource dataSource;
 
 
-    private int chunkSize = 10;
+    private int chunkSize = 1000;
 
 
     @Bean(name = "syncKwJob")
